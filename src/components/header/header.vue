@@ -30,16 +30,15 @@
     background :#c62f2f
     .menu
       flex:1
-      padding-left:10px
+      padding:5px 0 0 10px
       font-size :30px
       color:#fff
-      line-height :50px
     .tab
       display :flex
       flex:3
       .tab-item
         flex:1
-        line-height :50px
+        padding-top: 5px
         font-size :30px
         color:rgba(255,255,255,0.5)
         text-align :center

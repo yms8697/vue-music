@@ -58,7 +58,9 @@ app.use(devMiddleware)
 // enable hot-reload and state-preserving
 // compilation error display
 app.use(hotMiddleware)
-
+app.use(express.static('public'))
+// 获取 banner
+app.use('/banner', require('../src/api/router/banner'))
 // serve pure static assets
 var staticPath = path.posix.join(config.dev.assetsPublicPath, config.dev.assetsSubDirectory)
 app.use(staticPath, express.static('./static'))
