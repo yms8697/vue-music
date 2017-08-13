@@ -61,6 +61,8 @@ app.use(hotMiddleware)
 app.use(express.static('public'))
 // 获取 banner
 app.use('/banner', require('../src/api/router/banner'))
+// 获取分类歌单
+app.use('/top/playlist', require('../src/api/router/top_playlist'))
 // serve pure static assets
 var staticPath = path.posix.join(config.dev.assetsPublicPath, config.dev.assetsSubDirectory)
 app.use(staticPath, express.static('./static'))
