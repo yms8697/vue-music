@@ -8,3 +8,7 @@ export function getPlaylist () {
 export function getHighquality () {
   return axios.get('/top/playlist/highquality')
 }
+export function getPersonalized () {
+  return axios.get('/personalized')
+}
+

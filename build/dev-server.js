@@ -66,6 +66,12 @@ app.use('/top/playlist', require('../src/api/router/top_playlist'))
 // 获取精品歌单
 app.use('/top/playlist/highquality', require('../src/api/router/top_playlist_highquality'))
 // 获取歌单详细信息
+// 获取推荐歌单
+app.use('/personalized', require('../src/api/router/personalized'))
+// 获取最新音乐
+app.use('/personalized/newsong', require('../src/api/router/personalized_newsong'))
+// 获取推荐电台
+app.use('/personalized/mv', require('../src/api/router/personalized_mv'))
 // serve pure static assets
 var staticPath = path.posix.join(config.dev.assetsPublicPath, config.dev.assetsSubDirectory)
 app.use(staticPath, express.static('./static'))
