@@ -63,6 +63,9 @@ app.use(express.static('public'))
 app.use('/banner', require('../src/api/router/banner'))
 // 获取分类歌单
 app.use('/top/playlist', require('../src/api/router/top_playlist'))
+// 获取精品歌单
+app.use('/top/playlist/highquality', require('../src/api/router/top_playlist_highquality'))
+// 获取歌单详细信息
 // serve pure static assets
 var staticPath = path.posix.join(config.dev.assetsPublicPath, config.dev.assetsSubDirectory)
 app.use(staticPath, express.static('./static'))

@@ -37,7 +37,6 @@
 <style lang='stylus' rel='stylesheet/stylus'>
   .carousel
     width:100%
-    height:120px
     img
       width:100%
       height:100%

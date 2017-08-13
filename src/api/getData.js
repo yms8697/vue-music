@@ -5,3 +5,6 @@ export function getBanner () {
 export function getPlaylist () {
   return axios.get('/top/playlist')
 }
+export function getHighquality () {
+  return axios.get('/top/playlist/highquality')
+}

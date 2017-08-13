@@ -6,6 +6,7 @@ import router from './router'
 import './common/stylus/index.styl'
 import 'iview/dist/styles/iview.css'
 import iView from 'iview'
+// import VueLazyload from 'vue-lazyload'
 // import 'iview/dist/styles/iview.css'
 Vue.use(iView)
 Vue.config.productionTip = false
