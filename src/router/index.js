@@ -3,6 +3,10 @@ import Router from 'vue-router'
 import FindMusic from '@/components/findMusic/findMusic.vue'
 import MyMusic from '@/components/myMusic/myMusic.vue'
 import Community from '@/components/community/community.vue'
+import Recommend from '@/components/recommend/recommend.vue'
+import MusicList from '@/components/musicList/musicList.vue'
+import Radio from '@/components/radio/radio.vue'
+import Rank from '@/components/rank/rank.vue'
 Vue.use(Router)
 
 export default new Router({
@@ -14,7 +18,29 @@ export default new Router({
     },
     {
       path: '/findmusic',
-      component: FindMusic
+      redirect: 'findmusic/recommend'
+    },
+    {
+      path: '/findmusic',
+      component: FindMusic,
+      children: [
+        {
+          path: '/findmusic/recommend',
+          component: Recommend
+        },
+        {
+          path: '/findmusic/musiclist',
+          component: MusicList
+        },
+        {
+          path: '/findmusic/radio',
+          component: Radio
+        },
+        {
+          path: '/findmusic/rank',
+          component: Rank
+        }
+      ]
     },
     {
       path: '/mymusic',

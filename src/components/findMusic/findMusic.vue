@@ -1,43 +1,21 @@
 <template>
   <div id="findmusic">
-    <!--导航栏组件-->
-    <Menu mode="horizontal" :theme="theme1" active-name="1">
-        <Menu-item name="1">个性推荐</Menu-item>
-        <Menu-item name="2">歌单</Menu-item>
-        <Menu-item name="3">主播电台</Menu-item>
-        <Menu-item name="4">排行榜</Menu-item>
-    </Menu>
-    <!--轮播组件-->
-    <Carousel autoplay v-model="value2">
-        <Carousel-item v-for="(item,index) in banner" :key="index">
-            <div class="carousel"><img :src="item.pic"></img></div>
-        </Carousel-item>
-    </Carousel>
+    <!--导航栏-->
+    <div class="nav">
+      <router-link tag="div" class="nav-item" to="/findmusic/recommend">个性推荐</router-link>
+      <router-link tag="div" class="nav-item" to="/findmusic/musiclist">歌单</router-link>
+      <router-link tag="div" class="nav-item" to="/findmusic/radio">主播电台</router-link>
+      <router-link tag="div" class="nav-item" to="/findmusic/rank">排行</router-link>
+    </div>
+    <keep-alive><router-view></router-view></keep-alive>
   </div>
 </template>
 <script>
-  import { getBanner } from '@/api/getData.js'
-  const ERR_OK = 200
   export default {
     data () {
       return {
         // 设置导航样式
-        theme1: 'light',
-        value2: 0,
-        banner: []
-      }
-    },
-    created () {
-      this._getBanner()
-    },
-    methods: {
-      _getBanner () {
-        getBanner().then((res) => {
-          if (res.data.code === ERR_OK) {
-            this.banner = res.data.banners
-            console.log(this.banner)
-          }
-        })
+        theme1: 'light'
       }
     },
     comments: {
@@ -46,19 +24,15 @@
 </script>
 
 <style lang='stylus' rel='stylesheet/stylus'>
-  .ivu-menu-horizontal
-    height:35px
-    line-height :35px
-  .ivu-menu
+  .nav
     display :flex
-    .ivu-menu-item
-      flex:1
-      padding:0px
-      text-align :center
-  .carousel
     width:100%
-    height:120px
-    img
-      width:100%
-      height:100%
+    height:35px
+    .nav-item
+      flex:1
+      text-align :center
+      line-height :35px
+    .router-link-active
+      color:#f10c0c
+      border-bottom:2px solid #e41414
 </style>
