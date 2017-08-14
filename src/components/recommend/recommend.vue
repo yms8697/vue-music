@@ -6,12 +6,14 @@
             <div class="carousel"><img :src="item.pic"></img></div>
         </Carousel-item>
     </Carousel>
-    <RecommendList :recommendtitle="type" :list="personalized"></RecommendList>
-    <RecommendList :recommendtitle="type" :list="personalized"></RecommendList>
+    <div class="recommend-tab">
+    </div>
+    <RecommendList :recommendtitle="type.personalized" :list="personalized"></RecommendList>
+    <RecommendList :recommendtitle="type.newsong" :list="newsong"></RecommendList>
   </div>
 </template>
 <script>
-  import { getBanner, getPersonalized } from '@/api/getData.js'
+  import { getBanner, getPersonalized, getNewsong } from '@/api/getData.js'
   import RecommendList from '@/components/recommendlist/recommendlist.vue'
   const ERR_OK = 200
   export default {
@@ -20,7 +22,11 @@
         banner: [],
         value2: 0,
         personalized: [],
-        type: '推荐歌单'
+        newsong: [],
+        type: {
+          personalized: '推荐歌单',
+          newsong: '最新音乐'
+        }
       }
     },
     components: {
@@ -45,6 +51,16 @@
             console.log(res.data.result)
           }
         })
+        // 获取推荐新歌
+        getNewsong().then((res) => {
+          if (res.data.code === ERR_OK) {
+            this.newsong = res.data.result
+            for (let i = 0; i < this.newsong.length; i++) {
+              this.newsong[i].picUrl = this.newsong[i].song.album.picUrl
+            }
+            console.log(this.newsong)
+          }
+        })
       }
     }
   }
@@ -56,4 +72,8 @@
     img
       width:100%
       height:100%
+  .recommend-tab
+    width:100%
+    height:100px
+    border-bottom :1px solid rgba(134, 129, 129, 0.3)
 </style>

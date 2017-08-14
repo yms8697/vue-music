@@ -12,7 +12,7 @@
     <div class="playlist-select"></div>
     <div class="wrap">
       <ul class="playlist">
-        <li class="playlist-item" v-for="(item,index) in playlist" :key="index">
+        <li  @click="selectItem(item)" class="playlist-item" v-for="(item,index) in playlist" :key="index">
           <div class="card">
             <div class="card-img">
               <span class="headphone"><Icon type="headphone"></Icon><span class="text">{{item.playCount}}</span></span>
@@ -30,6 +30,7 @@
         <div>Loading</div>
       </Spin>
     </div>
+    <router-view></router-view>
   </div>
 </template>
 <script>
@@ -47,6 +48,12 @@
       this._getData()
     },
     methods: {
+      // 跳转到歌单详情页
+      selectItem (item) {
+        this.$router.push({
+          path: `/findmusic/musiclist/detail?id=${item.id}`
+        })
+      },
       _getData () {
         // 获取精品歌单数据
         getHighquality().then((res) => {

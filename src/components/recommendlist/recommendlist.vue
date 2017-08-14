@@ -5,15 +5,13 @@
       <li class="list-item" v-for="(item,index) in list" :key="index">
         <div class="card">
           <div class="card-img">
-            <span class="headphone">
+            <span class="headphone" v-show="item.playCount">
               <Icon type="headphone"></Icon>
               <span class="text">{{item.playCount}}</span>
             </span>
             <img :src="item.picUrl"></img>
           </div>
-          <div class="card-text">
-            <h5>{{item.name}}</h5>
-          </div>
+          <div class="card-text">{{item.name}}</div>
         </div>
       </li>
     </ul>
@@ -36,6 +34,10 @@
   .title
     border-left :2px solid #c62f2f
     padding-left :5px
+    margin-top :20px
+    margin-bottom :10px
+    font-size :14px
+    line-height :14px
   .list
     display :flex
     flex-direction: row
@@ -59,9 +61,7 @@
           .text
             margin-left :4px
       .card-text
-        padding :0 10px 10px 5px
+        padding :0 10px 10px 10px
         width:100%
-        height:50px
-        overflow :hidden
-        text-overflow :ellipsis
+        
 </style>

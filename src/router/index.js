@@ -7,6 +7,7 @@ import Recommend from '@/components/recommend/recommend.vue'
 import MusicList from '@/components/musicList/musicList.vue'
 import Radio from '@/components/radio/radio.vue'
 import Rank from '@/components/rank/rank.vue'
+import MusicListDetail from '@/components/musiclistdetail/musiclistdetail.vue'
 Vue.use(Router)
 
 export default new Router({
@@ -30,7 +31,13 @@ export default new Router({
         },
         {
           path: '/findmusic/musiclist',
-          component: MusicList
+          component: MusicList,
+          children: [
+            {
+              path: ':id',
+              component: MusicListDetail
+            }
+          ]
         },
         {
           path: '/findmusic/radio',

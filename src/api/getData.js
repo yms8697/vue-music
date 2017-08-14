@@ -11,4 +11,7 @@ export function getHighquality () {
 export function getPersonalized () {
   return axios.get('/personalized')
 }
+export function getNewsong () {
+  return axios.get('/personalized/newsong')
+}
 
