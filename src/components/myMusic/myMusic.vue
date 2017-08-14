@@ -1,6 +1,6 @@
 <template>
   <div id="mymusic">
-    我是mymusic
+    敬请期待
   </div>
 </template>
 <script>
