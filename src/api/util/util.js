@@ -1,9 +1,9 @@
 const Encrypt = require('./crypto.js')
 const http = require('http')
-function createWebAPIRequest(host, path, method, data, cookie, callback, errorcallback) {
-  let music_req = ''
+function createWebAPIRequest (host, path, method, data, cookie, callback, errorcallback) {
+  let musicReq = ''
   const cryptoreq = Encrypt(data)
-  const http_client = http.request({
+  const httpClient = http.request({
     hostname: host,
     method: method,
     path: path,
@@ -17,64 +17,64 @@ function createWebAPIRequest(host, path, method, data, cookie, callback, errorca
       'Cookie': cookie,
       'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36',
 
-    },
+    }
   }, function (res) {
     res.on('error', function (err) {
       errorcallback(err)
     })
     res.setEncoding('utf8')
-    if (res.statusCode != 200) {
+    if (res.statusCode !== 200) {
       createWebAPIRequest(host, path, method, data, cookie, callback)
       return
     } else {
       res.on('data', function (chunk) {
-        music_req += chunk
+        musicReq += chunk
       })
       res.on('end', function () {
-        if (music_req == '') {
+        if (musicReq === '') {
           createWebAPIRequest(host, path, method, data, cookie, callback)
           return
         }
         if (res.headers['set-cookie']) {
-          callback(music_req, res.headers['set-cookie'])
+          callback(musicReq, res.headers['set-cookie'])
         } else {
-          callback(music_req)
+          callback(musicReq)
         }
       })
     }
   })
-  http_client.write('params=' + cryptoreq.params + '&encSecKey=' + cryptoreq.encSecKey)
-  http_client.end()
+  httpClient.write('params=' + cryptoreq.params + '&encSecKey=' + cryptoreq.encSecKey)
+  httpClient.end()
 }
 
-function createRequest(path, method, data, callback, errorcallback) {
+function createRequest (path, method, data, callback, errorcallback) {
   return new Promise((resolve, reject) => {
-    let ne_req = ''
-    const http_client = http.request({
+    let neReq = ''
+    const httpClient = http.request({
       hostname: 'music.163.com',
       method: method,
       path: path,
       headers: {
         'Referer': 'http://music.163.com',
         'Cookie': 'appver=1.5.2',
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
     }, res => {
       res.setEncoding('utf8')
       res.on('error', err => {
         reject(err)
       })
       res.on('data', chunk => {
-        ne_req += chunk
+        neReq += chunk
       })
       res.on('end', () => {
-        resolve(ne_req)
+        resolve(neReq)
       })
     })
-    if (method == 'POST') {
-      http_client.write(data)
+    if (method === 'POST') {
+      httpClient.write(data)
     }
-    http_client.end()
+    httpClient.end()
   })
 }
 module.exports = {
