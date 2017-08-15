@@ -18,6 +18,7 @@ router.get('/', (req, res) => {
     musicReq => {
       res.send(musicReq)
     },
+    /* eslint handle-callback-err: "warn" */
     err => res.status(502).send('fetch error')
   )
 })

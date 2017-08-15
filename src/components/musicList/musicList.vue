@@ -35,6 +35,7 @@
 </template>
 <script>
   import { getPlaylist, getHighquality } from '@/api/getData.js'
+  import { mapMutations } from 'vuex'
   const ERR_OK = 200
   export default {
     data () {
@@ -53,6 +54,7 @@
         this.$router.push({
           path: `/findmusic/musiclist/detail?id=${item.id}`
         })
+        this.setMusicList(item)
       },
       _getData () {
         // 获取精品歌单数据
@@ -70,7 +72,11 @@
             this.playlist = res.data.playlists
           }
         })
-      }
+      },
+      ...mapMutations({
+        setMusicList: 'SET_MUSICLIST'
+      })
+
     }
   }
 </script>

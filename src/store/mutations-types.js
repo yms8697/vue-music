@@ -1,0 +1,1 @@
+export const SET_MUSICLIST = 'SET_MUSICLIST'

@@ -66,6 +66,7 @@ app.use('/top/playlist', require('../src/api/router/top_playlist'))
 // 获取精品歌单
 app.use('/top/playlist/highquality', require('../src/api/router/top_playlist_highquality'))
 // 获取歌单详细信息
+app.use('/playlist/detail', require('../src/api/router/playlist_detail'))
 // 获取推荐歌单
 app.use('/personalized', require('../src/api/router/personalized'))
 // 获取最新音乐

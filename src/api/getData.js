@@ -14,4 +14,11 @@ export function getPersonalized () {
 export function getNewsong () {
   return axios.get('/personalized/newsong')
 }
+export function getListDetail (id) {
+  return axios.get('/playlist/detail', {
+    params: {
+      id: id
+    }
+  })
+}
 
