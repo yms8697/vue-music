@@ -26,11 +26,11 @@ export default new Router({
       component: FindMusic,
       children: [
         {
-          path: '/findmusic/recommend',
+          path: 'recommend',
           component: Recommend
         },
         {
-          path: '/findmusic/musiclist',
+          path: 'musiclist',
           component: MusicList,
           children: [
             {
@@ -40,11 +40,11 @@ export default new Router({
           ]
         },
         {
-          path: '/findmusic/radio',
+          path: 'radio',
           component: Radio
         },
         {
-          path: '/findmusic/rank',
+          path: 'rank',
           component: Rank
         }
       ]

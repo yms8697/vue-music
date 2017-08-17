@@ -52,9 +52,10 @@
       // 跳转到歌单详情页
       selectItem (item) {
         this.$router.push({
-          path: `/findmusic/musiclist/detail?id=${item.id}`
+          path: `musiclist/detail?id=${item.id}`
         })
         this.setMusicList(item)
+        // console.log(item)
       },
       _getData () {
         // 获取精品歌单数据
