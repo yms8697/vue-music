@@ -1,1 +1,4 @@
-export const musiclist = state => state.musiclist
+export const musiclist = state => {
+  console.log('getmusiclist')
+  return state.musiclist
+}

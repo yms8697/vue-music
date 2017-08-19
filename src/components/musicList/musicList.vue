@@ -1,36 +1,38 @@
 <template>
   <div id="musiclist">
-    <div class="highquality-playlist">
-      <div class="img-container">
-        <img :src="highquality.coverImgUrl"></img>
+    <div v-show="show">
+      <div class="highquality-playlist">
+        <div class="img-container">
+          <img :src="highquality.coverImgUrl"></img>
+        </div>
+        <div class="dec">
+          <h1>精品歌单</h1>
+          <span class="text">{{highquality.name}}</span>
+        </div>
       </div>
-      <div class="dec">
-        <h1>精品歌单</h1>
-        <span class="text">{{highquality.name}}</span>
+      <div class="playlist-select"></div>
+      <div class="wrap">
+        <ul class="playlist">
+          <li  @click="selectItem(item)" class="playlist-item" v-for="(item,index) in playlist" :key="index">
+            <div class="card">
+              <div class="card-img">
+                <span class="headphone"><Icon type="headphone"></Icon><span class="text">{{item.playCount}}</span></span>
+                <div class="person"><Icon type="person"></Icon><span class="text">{{item.creator.nickname}}</span></div>
+                <img :src="item.coverImgUrl"></img>
+              </div>
+              <div class="card-text">
+                <h5>{{item.name}}</h5>
+              </div>
+            </div>
+          </li>
+        </ul>
+        <Spin  fix v-show="!playlist.length">
+          <Icon type="load-c" size=35 class="demo-spin-icon-load"></Icon>
+          <div>Loading</div>
+        </Spin>
       </div>
     </div>
-    <div class="playlist-select"></div>
-    <div class="wrap">
-      <ul class="playlist">
-        <li  @click="selectItem(item)" class="playlist-item" v-for="(item,index) in playlist" :key="index">
-          <div class="card">
-            <div class="card-img">
-              <span class="headphone"><Icon type="headphone"></Icon><span class="text">{{item.playCount}}</span></span>
-              <div class="person"><Icon type="person"></Icon><span class="text">{{item.creator.nickname}}</span></div>
-              <img :src="item.coverImgUrl"></img>
-            </div>
-            <div class="card-text">
-              <h5>{{item.name}}</h5>
-            </div>
-          </div>
-        </li>
-      </ul>
-      <Spin  fix v-show="!playlist.length">
-        <Icon type="load-c" size=35 class="demo-spin-icon-load"></Icon>
-        <div>Loading</div>
-      </Spin>
-    </div>
-    <router-view></router-view>
+    <router-view ref="detail"></router-view>
   </div>
 </template>
 <script>
@@ -42,11 +44,19 @@
       return {
         playlist: [],
         highquality: [],
-        highqualityList: []
+        highqualityList: [],
+        show: true
       }
     },
     created () {
       this._getData()
+    },
+    watch: {
+      $route () {
+        if (this.$route.path === '/findmusic/musiclist') {
+          this.show = true
+        }
+      }
     },
     methods: {
       // 跳转到歌单详情页
@@ -55,7 +65,7 @@
           path: `musiclist/detail?id=${item.id}`
         })
         this.setMusicList(item)
-        // console.log(item)
+        this.show = false
       },
       _getData () {
         // 获取精品歌单数据
