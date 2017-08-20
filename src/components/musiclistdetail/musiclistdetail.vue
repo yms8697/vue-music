@@ -12,29 +12,31 @@
         </Listview>
       </div>
     </Scroll>
-    <div v-show='show' class="dec-detail">
-      <div>
-        <div class="detail-bg blur " :style='bg'></div>
-        <Scroll ref="detail" class="detail-wrapper">
-          <div class="detail-main">
-            <div class="img-container">
-              <img :src="bgImg">
-            </div>
-            <h1 class="dec-title" v-html="title"></h1>
-            <div class="dec" v-html="replace"></div>
-            <span>
-              <span>标签:</span>
-              <span  class="tag"v-for='(item,index) in this.musiclist.tags' :key="index">
-                <div>{{item}}</div>
+    <transition name="slide">
+      <div v-show='show' class="dec-detail">
+        <div>
+          <div class="detail-bg blur " :style='bg'></div>
+          <Scroll ref="detail" class="detail-wrapper">
+            <div class="detail-main">
+              <div class="img-container">
+                <img :src="bgImg">
+              </div>
+              <h1 class="dec-title" v-html="title"></h1>
+              <div class="dec" v-html="replace"></div>
+              <span> 
+                <span>标签:</span>
+                <span  class="tag"v-for='(item,index) in this.musiclist.tags' :key="index">
+                  <div>{{item}}</div>
+                </span>
               </span>
-            </span>
-          </div>
-        </Scroll>
+            </div>
+          </Scroll>
+        </div>
+        <div class="close-wrapper">
+          <div @click='show=!show' class="close"><Icon type="close-round"></Icon></div>
+        </div>
       </div>
-      <div class="close-wrapper">
-        <!--<Icon type="close-round"></Icon>-->
-      </div>
-    </div>
+    </transition>
   </div>
 </template>
 <script>
@@ -61,6 +63,7 @@
           return this.musiclist.coverImgUrl
         }
       },
+      // 将字符串中的空格替换成</br>
       replace () {
         let str = this.musiclist.description
         str = str.replace(/\s/g, '</br>')
@@ -89,13 +92,15 @@
       }
     },
     methods: {
+      // 详情页显示
       detailShow () {
-        console.log('detailshow')
         this.show = true
+        // 刷新scroll
         setTimeout(() => {
           this.$refs.detail.refresh()
         }, 20)
       },
+      // 返回
       back () {
         this.$router.push({
           path: `/findmusic/musiclist`
@@ -121,6 +126,10 @@
     bottom:0px
     overflow :hidden
     background :#fff
+  .slide-enter-active, .slide-leave-active
+    transition :all 0.3s
+  .slide-enter, .slide-leave-to
+    transform :translate3d(100%,0,0)
   .dec-detail
     position :fixed
     width:100%
@@ -140,12 +149,12 @@
       top:0px
       bottom:70px
       left:0px
-      padding :20% 10% 0 10%
+      padding :0 10% 
       overflow :hidden
       color:#fff
       .img-container
         width:100%
-        padding :0 10%
+        padding :20% 10% 0 10%
         img 
           width:100%
       .dec-title
@@ -164,7 +173,13 @@
       bottom:0px
       width:100%
       height:70px
-      background :rgb(255,255,255)
-      filter :blur(50px)
+      .close
+        width:70px
+        height :70px
+        line-height :70px
+        text-align :center
+        margin :0 auto
+        font-size :28px
+        color:#fff
       
 </style>
