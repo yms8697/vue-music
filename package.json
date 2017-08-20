@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "axios": "^0.16.2",
+    "better-scroll": "^1.2.0",
     "big-integer": "^1.6.17",
     "iview": "^2.0.0",
     "request": "^2.81.0",

@@ -1,45 +1,52 @@
 <template>
   <div id="musiclist">
-    <div v-show="show">
-      <div class="highquality-playlist">
-        <div class="img-container">
-          <img :src="highquality.coverImgUrl"></img>
-        </div>
-        <div class="dec">
-          <h1>精品歌单</h1>
-          <span class="text">{{highquality.name}}</span>
-        </div>
-      </div>
-      <div class="playlist-select"></div>
-      <div class="wrap">
-        <ul class="playlist">
-          <li  @click="selectItem(item)" class="playlist-item" v-for="(item,index) in playlist" :key="index">
-            <div class="card">
-              <div class="card-img">
-                <span class="headphone"><Icon type="headphone"></Icon><span class="text">{{item.playCount}}</span></span>
-                <div class="person"><Icon type="person"></Icon><span class="text">{{item.creator.nickname}}</span></div>
-                <img :src="item.coverImgUrl"></img>
-              </div>
-              <div class="card-text">
-                <h5>{{item.name}}</h5>
-              </div>
+    <Scroll ref="scroll" class="musiclist-content" :data="list">
+      <div>
+        <div v-show="show">
+          <div class="highquality-playlist">
+            <div class="img-container">
+              <img :src="highquality.coverImgUrl"></img>
             </div>
-          </li>
-        </ul>
-        <Spin  fix v-show="!playlist.length">
-          <Icon type="load-c" size=35 class="demo-spin-icon-load"></Icon>
-          <div>Loading</div>
-        </Spin>
+            <div class="dec">
+              <h1>精品歌单</h1>
+              <span class="text">{{highquality.name}}</span>
+            </div>
+          </div>
+          <div class="playlist-select"></div>
+          <div class="wrap">
+            <ul class="playlist">
+              <li  @click="selectItem(item)" class="playlist-item" v-for="(item,index) in playlist" :key="index">
+                <div class="card">
+                  <div class="card-img">
+                    <span class="headphone"><Icon type="headphone"></Icon><span class="text">{{item.playCount}}</span></span>
+                    <div class="person"><Icon type="person"></Icon><span class="text">{{item.creator.nickname}}</span></div>
+                    <img :src="item.coverImgUrl"></img>
+                  </div>
+                  <div class="card-text" v-html="item.name">
+                  </div>
+                </div>
+              </li>
+            </ul>
+            <Spin  fix v-show="!playlist.length">
+              <Icon type="load-c" size=35 class="demo-spin-icon-load"></Icon>
+              <div>Loading</div>
+            </Spin>
+          </div>
+        </div>
       </div>
-    </div>
+    </Scroll>
     <router-view ref="detail"></router-view>
   </div>
 </template>
 <script>
   import { getPlaylist, getHighquality } from '@/api/getData.js'
   import { mapMutations } from 'vuex'
+  import Scroll from '@/base/scroll.vue'
   const ERR_OK = 200
   export default {
+    components: {
+      Scroll
+    },
     data () {
       return {
         playlist: [],
@@ -48,8 +55,16 @@
         show: true
       }
     },
+    computed: {
+      list () {
+        return this.playlist
+      }
+    },
     created () {
       this._getData()
+      // this.$nextTick(() => {
+      //   this.$refs.scroll.refresh()
+      // })
     },
     watch: {
       $route () {
@@ -93,81 +108,91 @@
 </script>
 
 <style lang='stylus' rel='stylesheet/stylus'>
-  .highquality-playlist
-    position :relative
+  .musiclist-content
+    position :fixed
     width:100%
-    padding :20px 10px 10px 8px
-    background :#777
+    top:85px
+    left:0px
+    bottom:0px
     overflow :hidden
-    .img-container
-      width:100px
-      img
-        width:100%
-        height:100%
-    .dec
-      width:250px
-      position :absolute
-      top:20px
-      left:120px
-      color:#fff
-      text-overflow :ellipsis
+    .highquality-playlist
+      position :relative
+      width:100%
+      height:135px
+      padding :20px 10px 10px 8px
+      background :#777
       overflow :hidden
-      white-space:nowrap
-      h1
-        font-size :20px
-        font-weight:200
-      .text
-        font-size :16px
-        font-weight:100
-  .playlist-select
-    width:100%
-    height:30px
-  .wrap
-    position :relative
-    .playlist
-      display :flex
-      flex-direction: row
-      justify-content: space-between
-      flex-flow: row wrap
-      list-style: none
-      .playlist-item
-        flex:0 0 49%
-        .card-img
+      .img-container
+        width:100px
+        img
           width:100%
-          position :relative
-          .headphone
-            position :absolute
-            font-size :10px
-            top:0px
-            right:15px
-            color:rgba(255,255,255,0.9)
-            .text
-              margin-left :4px
-          .person
-            width:100px
-            height:18px
-            position :absolute
-            left:5px
-            bottom:8px
-            color :#fff
-            text-overflow :ellipsis
-            overflow :hidden
-            white-space:nowrap
-            .text
-              margin-left :4px
-          img
+          height:100%
+      .dec
+        width:250px
+        position :absolute
+        top:20px
+        left:120px
+        color:#fff
+        text-overflow :ellipsis
+        overflow :hidden
+        white-space:nowrap
+        h1
+          font-size :20px
+          font-weight:200
+        .text
+          font-size :16px
+          font-weight:100
+    .playlist-select
+      width:100%
+      height:30px
+    .wrap
+      position :relative
+      .playlist
+        display :flex
+        flex-direction: row
+        justify-content: space-between
+        flex-flow: row wrap
+        list-style: none
+        .playlist-item
+          flex:0 0 49%
+          overflow :hidden
+          .card-img
             width:100%
-            height:100%
-        .card-text
-          width:100%
-          height:50px
-          padding :0 10px 0 10px
-    .demo-spin-icon-load{
-      animation: ani-demo-spin 1s linear infinite;
-    }
-    @keyframes ani-demo-spin {
-      from { transform: rotate(0deg);}
-      50%  { transform: rotate(180deg);}
-      to   { transform: rotate(360deg);}
-    }
+            position :relative
+            .headphone
+              position :absolute
+              font-size :10px
+              top:0px
+              right:15px
+              color:rgba(255,255,255,0.9)
+              .text
+                margin-left :4px
+            .person
+              width:100px
+              height:18px
+              position :absolute
+              left:5px
+              bottom:8px
+              color :#fff
+              text-overflow :ellipsis
+              overflow :hidden
+              white-space:nowrap
+              .text
+                margin-left :4px
+            img
+              width:100%
+              height:100%
+          .card-text
+            width:100%
+            height:50px
+            padding :0 10px 0 10px
+            overflow :hidden
+      .demo-spin-icon-load{
+        animation: ani-demo-spin 1s linear infinite;
+      }
+      @keyframes ani-demo-spin {
+        from { transform: rotate(0deg);}
+        50%  { transform: rotate(180deg);}
+        to   { transform: rotate(360deg);}
+      }
 </style>

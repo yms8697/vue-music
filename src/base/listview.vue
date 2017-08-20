@@ -1,14 +1,9 @@
 <template>
   <div id="listview">
-    <div class="list-title">
-      <span @click="back"><Icon type="chevron-left"></Icon></span>
-    </div>
     <div class="listdec">
       <div class="blur" :style="bgStyle"></div>
       <div class="wrap">
-        <div class="bg-img">
-          <img :src="img">
-        </div>
+        <slot></slot>
         <div class="dec">
           <h1 v-html="title"></h1>
         </div>
@@ -17,10 +12,6 @@
     <div class="play-all">
     </div>
     <div>
-      <Spin  fix v-show="!list.length">
-          <Icon type="load-c" size=35 class="demo-spin-icon-load"></Icon>
-          <div>Loading</div>
-      </Spin>
       <ul class="itemlist">
         <li class="item" v-for="(item,index) in list" :key="index">
           <div class="index" v-html="index+1"></div>
@@ -30,11 +21,20 @@
           </div>
         </li>
       </ul>
+      <Spin v-show="!list.length">
+          <Icon type="load-c" size=35 class="demo-spin-icon-load"></Icon>
+          <div>Loading</div>
+      </Spin>
     </div>
   </div>
 </template>
 <script>
   export default {
+    data () {
+      return {
+        show: false
+      }
+    },
     props: {
       list: {
         type: Array
@@ -42,18 +42,9 @@
       title: {
         type: String,
         default: ''
-      },
-      img: {
-        type: String,
-        default: ''
       }
     },
     methods: {
-      back () {
-        this.$router.push({
-          path: `/findmusic/musiclist`
-        })
-      }
     },
     computed: {
       bgStyle () {
@@ -64,13 +55,6 @@
 </script>
 
 <style lang='stylus' rel='stylesheet/stylus'>
-  #listview
-    position :absolute
-    width:100%
-    top:0px
-    bottom:0px
-    left:0px
-    background :#FFF
   .listdec-detail
     position :fixed
     top:0px
@@ -86,7 +70,7 @@
     top:0px
     width :100%
     height:60px
-    background :rgba(255, 255, 255, 0)
+    background :rgba(255, 255, 255, 0.05)
     z-index :999
     font-size :16px
     color:#fff
@@ -106,7 +90,7 @@
     z-index :998
     .wrap
       display:flex
-      margin-top:-70%
+      position :absolute
       top:60px
       padding-left:20px
       filter: blur(0px)
@@ -126,7 +110,9 @@
     width:100%
     height:50px
     border-bottom:1px solid rgba(195, 194, 194, 0.4)
-  .demo-spin-icon-load{
+  .ivu-spin
+    margin-top:30px
+    .demo-spin-icon-load{
       animation: ani-demo-spin 1s linear infinite;
     }
     @keyframes ani-demo-spin {
@@ -146,6 +132,14 @@
       border-bottom:1px solid rgba(195, 194, 194, 0.4)
       .name
         font-size :14px
+        width:200px
+        overflow :hidden
+        text-overflow :ellipsis
+        white-space:nowrap
       .album
         color:#7b7b7b
+        width:200px
+        overflow :hidden
+        text-overflow :ellipsis
+        white-space:nowrap
 </style>
