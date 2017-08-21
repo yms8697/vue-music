@@ -41,9 +41,10 @@
 </template>
 <script>
   import Listview from '@/base/listview.vue'
+  import Song from '@/common/js/song.js'
   // import { mapGetters } from 'vuex'
   import {mapActions} from 'vuex'
-  import { getListDetail } from '@/api/getData.js'
+  import { getListDetail, getPlayUrl } from '@/api/getData.js'
   import Scroll from '@/base/scroll.vue'
   export default {
     data () {
@@ -95,9 +96,13 @@
     },
     methods: {
       selectItem (item, index) {
-        this.selectPlay({
-          list: this.detailList,
-          index: index
+        getPlayUrl(item.id).then((res) => {
+          this.detailList[index].playUrl = res.data.data[0].url
+          console.log(res.data.data[0].url)
+          this.selectPlay({
+            list: this.detailList,
+            index: index
+          })
         })
       },
       ...mapActions([
@@ -118,9 +123,24 @@
       // 获取数据
       _getData () {
         getListDetail(this.musiclist.id).then((res) => {
-          this.detailList = res.data.playlist.tracks
-          console.log(res.data.playlist.tracks)
+          // this.detailList = res.data.playlist.tracks
+          // console.log(res.data.playlist.tracks)
+          this.detailList = this.normalizeSongs(res.data.playlist.tracks)
         })
+      },
+      normalizeSongs (list) {
+        let ret = []
+        list.forEach((item) => {
+          ret.push(new Song({
+            id: item.id,
+            name: item.name,
+            singer: item.ar[0].name,
+            duration: item.dt,
+            album: item.al.name,
+            imgUrl: item.al.picUrl
+          }))
+        })
+        return ret
       }
     }
   }

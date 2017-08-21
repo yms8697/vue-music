@@ -17,7 +17,7 @@
           <div class="index" v-html="index+1"></div>
           <div class="song">
             <div class="name">{{item.name}}</div>
-            <div class="album">{{item.ar[0].name}}-{{item.al.name}}</div>
+            <div class="album">{{item.singer}}-{{item.album}}</div>
           </div>
         </li>
       </ul>

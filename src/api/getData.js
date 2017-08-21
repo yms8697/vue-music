@@ -21,4 +21,11 @@ export function getListDetail (id) {
     }
   })
 }
+export function getPlayUrl (id) {
+  return axios.get('http://localhost:3000/music/url', {
+    params: {
+      id: id
+    }
+  })
+}
 
