@@ -13,7 +13,7 @@
     </div>
     <div>
       <ul class="itemlist">
-        <li class="item" v-for="(item,index) in list" :key="index">
+        <li @click="selectItem(item, index)" class="item" v-for="(item,index) in list" :key="index">
           <div class="index" v-html="index+1"></div>
           <div class="song">
             <div class="name">{{item.name}}</div>
@@ -22,8 +22,8 @@
         </li>
       </ul>
       <Spin v-show="!list.length">
-          <Icon type="load-c" size=35 class="demo-spin-icon-load"></Icon>
-          <div>Loading</div>
+        <Icon type="load-c" size=35 class="demo-spin-icon-load"></Icon>
+        <div>Loading</div>
       </Spin>
     </div>
   </div>
@@ -35,6 +35,12 @@
         show: false
       }
     },
+    methods: {
+      // 点击歌单列表
+      selectItem (item, index) {
+        this.$emit('select', item, index)
+      }
+    },
     props: {
       list: {
         type: Array
@@ -42,9 +48,11 @@
       title: {
         type: String,
         default: ''
+      },
+      img: {
+        type: String,
+        default: ''
       }
-    },
-    methods: {
     },
     computed: {
       bgStyle () {
@@ -55,23 +63,13 @@
 </script>
 
 <style lang='stylus' rel='stylesheet/stylus'>
-  .listdec-detail
-    position :fixed
-    top:0px
-    bottom :0px
-    left:0px
-    height:100%
-    width:100%
-    background :#fff
-    z-index:9999
-    overflow:hidden
   .list-title
     position :fixed
     top:0px
     width :100%
     height:60px
     background :rgba(255, 255, 255, 0.05)
-    z-index :999
+    z-index :9
     font-size :16px
     color:#fff
   .blur
@@ -87,7 +85,7 @@
     padding-top:70%
     background :#1d1d1d
     overflow :hidden
-    z-index :998
+    z-index :8
     .wrap
       display:flex
       position :absolute

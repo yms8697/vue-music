@@ -1,11 +1,11 @@
 <template>
   <div id="detail-wrap">
-    <div v-show='!show' class="list-title">
+    <div  class="list-title">
       <span @click="back"><Icon type="chevron-left"></Icon></span>
     </div>
     <Scroll :data="list" class="wrap-content">
       <div>
-        <Listview :list="detailList" :title="title">
+        <Listview @select="selectItem" :title="title" :img='bgImg' :list='detailList'>
           <div @click="detailShow" class="bg-img" >
             <img :src="bgImg">
           </div>
@@ -42,6 +42,7 @@
 <script>
   import Listview from '@/base/listview.vue'
   // import { mapGetters } from 'vuex'
+  import {mapActions} from 'vuex'
   import { getListDetail } from '@/api/getData.js'
   import Scroll from '@/base/scroll.vue'
   export default {
@@ -72,6 +73,7 @@
       title () {
         if (this.musiclist) {
           return this.musiclist.name
+          // this.$emit('select', item, index)
         }
       },
       bg () {
@@ -92,6 +94,15 @@
       }
     },
     methods: {
+      selectItem (item, index) {
+        this.selectPlay({
+          list: this.detailList,
+          index: index
+        })
+      },
+      ...mapActions([
+        'selectPlay'
+      ]),
       // 详情页显示
       detailShow () {
         this.show = true
@@ -102,9 +113,7 @@
       },
       // 返回
       back () {
-        this.$router.push({
-          path: `/findmusic/musiclist`
-        })
+        this.$router.back()
       },
       // 获取数据
       _getData () {
@@ -129,13 +138,14 @@
   .slide-enter-active, .slide-leave-active
     transition :all 0.3s
   .slide-enter, .slide-leave-to
-    transform :translate3d(100%,0,0)
+    transform :translate3d(0,100%,0)
   .dec-detail
     position :fixed
     width:100%
     height:100%
     top:0px
     left:0px
+    z-index:99
     overflow :hidden
     background :#fff
     .detail-bg
