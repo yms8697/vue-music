@@ -11,44 +11,70 @@
           <div class="share"></div>
         </div>
         <div class="main">
-          <div class="img-container"><img :src="currentSong.imgUrl"></div>
+          <div class="img-container"><img :class="rotate" :src="currentSong.imgUrl"></div>
           <div class="icon-container">
             <div class="icon"><Icon type="android-favorite-outline"></Icon></div>
-            <div class="icon"><Icon type="ios-download-outline"></Icon></div>
+            <div class="icon"><i class="icon-message"></i></div>
             <div class="icon"><Icon type="android-textsms"></Icon></div>
             <div class="icon"><Icon type="android-more-vertical"></Icon></div>
           </div>
         </div>
         <div class="footer">
-          我是footer
+          <div class="progress-container">
+            <div class="time">{{format(currentTime)}}</div>
+            <Progress-Bar :percent="percent" @percentChange="percentChange"></Progress-Bar>
+            <div class="time">{{format(currentSong.duration/1000)}}</div>
+          </div>
+          <div class="play-icon">
+            <div class="play-item"></div>
+            <div @click="prev" class="play-item"><i class="icon-prevdetail"></i></div>
+            <div @click="togglePlaying" class="play-item"><i :class="playIcon"></i></div>
+            <div @click="next" class="play-item"><i class="icon-nextdetail"></i></div</div>
+            <div class="play-item"></div>
+          </div>
         </div>
       </div>
     </transition>
     <transition name="mini">
       <div @click="open" class="mini-player" v-show="!fullScreen"></div>
     </transition>
-    <audio :src="currentSong.playUrl" ref="audio"></audio>
+    <audio :src="currentSong.playUrl" ref="audio" @timeupdate="updatatime" @canplay="ready" @error="error"></audio>
   </div>
 </template>
 <script>
   import {mapGetters, mapMutations} from 'vuex'
+  import ProgressBar from '@/base/progress.vue'
   export default {
+    components: {
+      ProgressBar
+    },
     data () {
       return {
-        playUrl: ''
+        songReady: false,
+        currentTime: 0
       }
     },
     computed: {
       ...mapGetters([
         'fullScreen',
         'playlist',
-        'currentSong'
+        'currentSong',
+        'playing',
+        'currentIndex'
       ]),
-      song () {
-        return this.currentSong
+      // 根据播放状态改变播放按钮css样式
+      playIcon () {
+        return this.playing ? 'icon-pause-detail' : 'icon-playdetail'
+      },
+      // 根据播放状态改变cd的旋转状态
+      rotate () {
+        return this.playing ? 'play' : 'play pause'
       },
       bgImg () {
         return `background:url(${this.currentSong.imgUrl});background-size:100% 100%`
+      },
+      percent () {
+        return this.currentTime / (this.currentSong.duration / 1000)
       }
     },
     methods: {
@@ -60,14 +86,82 @@
       open () {
         this.setFullScreen(true)
       },
+      // 改变播放状态
+      togglePlaying () {
+        this.setPlayingState(!this.playing)
+      },
+      next () {
+        if (!this.songReady) {
+          return
+        }
+        let index = this.currentIndex + 1
+        if (index === this.playlist.length) {
+          index = 0
+        }
+        this.setCurrentIndex(index)
+        if (!this.playing) {
+          this.togglePlaying()
+        }
+        this.songReady = false
+      },
+      prev () {
+        if (!this.songReady) {
+          return
+        }
+        let index = this.currentIndex - 1
+        if (index === -1) {
+          index = this.playlist.length - 1
+        }
+        this.setCurrentIndex(index)
+        if (!this.playing) {
+          this.togglePlaying()
+        }
+        this.songReady = false
+      },
+      ready () {
+        this.songReady = true
+      },
+      error () {
+        this.songReady = true
+      },
+      updatatime (e) {
+        this.currentTime = e.target.currentTime
+      },
+      // 将时间戳转化成 xx:xx形式
+      format (interval) {
+        interval = interval | 0
+        const minute = interval / 60 | 0
+        const second = this._pad(interval % 60)
+        return `${minute}:${second}`
+      },
+      // percent改变时歌曲跳到相应时间
+      percentChange (percent) {
+        this.$refs.audio.currentTime = percent * this.currentSong.duration / 1000
+      },
+      _pad (num, n = 2) {
+        var len = num.toString().length
+        while (len < n) {
+          num = '0' + num
+          len++
+        }
+        return num
+      },
       ...mapMutations({
-        setFullScreen: 'SET_FULL_SCREEN'
+        setFullScreen: 'SET_FULL_SCREEN',
+        setPlayingState: 'SET_PLAYING_STATE',
+        setCurrentIndex: 'SET_CURRENT_INDEX'
       })
     },
     watch: {
       currentSong () {
         this.$nextTick(() => {
           this.$refs.audio.play()
+        })
+      },
+      playing (newPlaying) {
+        this.$nextTick(() => {
+          const audio = this.$refs.audio
+          newPlaying ? audio.play() : audio.pause()
         })
       }
     }
@@ -117,6 +211,15 @@
           width:100%
           height:100%
           border-radius:50%
+          &.play
+            animation:rotate 20s linear infinite
+          &.pause
+            animation-play-state: paused
+          @keyframes rotate
+            0%
+              transform :rotate(0)
+            100%
+              transform :rotate(360deg)
       .icon-container
         display :flex
         width:80%
@@ -133,6 +236,26 @@
       bottom:0px
       width :100%
       height:100px
+      .progress-container
+        height:30px
+        width:90%
+        display:flex
+        margin :0 auto
+        .time 
+          flex:1
+          color:#fff
+          line-height :30px
+          text-align :center
+      .play-icon
+        width:100%
+        height:50px
+        display :flex
+        .play-item
+          flex:1
+          line-height :50px
+          text-align :center
+          font-size :36px
+          color:#fff
     &.normal-enter-active, &.normal-leave-active
       transition :all 0.5s
       .top, .footer

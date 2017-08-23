@@ -96,13 +96,9 @@
     },
     methods: {
       selectItem (item, index) {
-        getPlayUrl(item.id).then((res) => {
-          this.detailList[index].playUrl = res.data.data[0].url
-          console.log(res.data.data[0].url)
-          this.selectPlay({
-            list: this.detailList,
-            index: index
-          })
+        this.selectPlay({
+          list: this.detailList,
+          index: index
         })
       },
       ...mapActions([
@@ -126,6 +122,11 @@
           // this.detailList = res.data.playlist.tracks
           // console.log(res.data.playlist.tracks)
           this.detailList = this.normalizeSongs(res.data.playlist.tracks)
+          this.detailList.forEach((item) => {
+            getPlayUrl(item.id).then((res) => {
+              item.playUrl = res.data.data[0].url
+            })
+          })
         })
       },
       normalizeSongs (list) {
