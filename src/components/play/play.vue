@@ -7,7 +7,7 @@
           <div @click="back" class="back-icon">
             <Icon type="chevron-left"></Icon>
           </div>
-          <div class="playtitle"></div>
+          <div class="playtitle" v-html='currentSong.name'></div>
           <div class="share"></div>
         </div>
         <div class="main">
@@ -26,7 +26,7 @@
             <div class="time">{{format(currentSong.duration/1000)}}</div>
           </div>
           <div class="play-icon">
-            <div class="play-item"></div>
+            <div class="play-item" @click.stop="changeMode"><i :class="iconMode"></i></div>
             <div @click="prev" class="play-item"><i class="icon-prevdetail"></i></div>
             <div @click="togglePlaying" class="play-item"><i :class="playIcon"></i></div>
             <div @click="next" class="play-item"><i class="icon-nextdetail"></i></div</div>
@@ -38,12 +38,14 @@
     <transition name="mini">
       <div @click="open" class="mini-player" v-show="!fullScreen"></div>
     </transition>
-    <audio :src="currentSong.playUrl" ref="audio" @timeupdate="updatatime" @canplay="ready" @error="error"></audio>
+    <audio :src="currentSong.playUrl" ref="audio" @timeupdate="updatatime" @canplay="ready" @error="error" @ended="end"></audio>
   </div>
 </template>
 <script>
   import {mapGetters, mapMutations} from 'vuex'
-  import ProgressBar from '@/base/progress.vue'
+  import ProgressBar from '@/base/progress'
+  import {playMode} from '@/common/js/config'
+  import {shuffle} from '@/common/js/util'
   export default {
     components: {
       ProgressBar
@@ -60,7 +62,9 @@
         'playlist',
         'currentSong',
         'playing',
-        'currentIndex'
+        'currentIndex',
+        'mode',
+        'sequenceList'
       ]),
       // 根据播放状态改变播放按钮css样式
       playIcon () {
@@ -69,6 +73,10 @@
       // 根据播放状态改变cd的旋转状态
       rotate () {
         return this.playing ? 'play' : 'play pause'
+      },
+      // 根据播放形式改变播放样式
+      iconMode () {
+        return this.mode === playMode.sequence ? 'icon-music-shunxu' : this.mode === playMode.loop ? 'icon-music-danqu1' : 'icon-music-random'
       },
       bgImg () {
         return `background:url(${this.currentSong.imgUrl});background-size:100% 100%`
@@ -90,6 +98,43 @@
       togglePlaying () {
         this.setPlayingState(!this.playing)
       },
+      // 播放结束时播放下一首
+      end () {
+        // 判断是否为单曲循环模式
+        if (this.mode === playMode.loop) {
+          this.$refs.audio.currentTime = 0
+          this.$refs.audio.play()
+        } else {
+          this.next()
+        }
+      },
+      // 改变播放模式
+      changeMode () {
+        // for (var j = 0; j < this.sequenceList.length; j++) {
+        //   this.sequenceList[j] = 2
+        // }
+        let mode = (this.mode + 1) % 3
+        this.setMode(mode)
+        let changelist = null
+        // 当播放模式是随机播放时打乱列表
+        if (mode === playMode.random) {
+          let randomlist = null
+          changelist = shuffle(this.playlist)
+          console.log(`ran:${randomlist}`)
+        } else {
+          changelist = this.sequenceList
+        }
+        this.resetCurrentIndex(changelist)
+        this.setPlayList(changelist)
+      },
+      resetCurrentIndex (list) {
+        let index = list.findIndex((item) => {
+          return item.id === this.currentSong.id
+        })
+        console.log(index)
+        this.setCurrentIndex(index)
+      },
+      // 下首歌
       next () {
         if (!this.songReady) {
           return
@@ -104,6 +149,7 @@
         }
         this.songReady = false
       },
+      // 上首歌
       prev () {
         if (!this.songReady) {
           return
@@ -149,11 +195,17 @@
       ...mapMutations({
         setFullScreen: 'SET_FULL_SCREEN',
         setPlayingState: 'SET_PLAYING_STATE',
-        setCurrentIndex: 'SET_CURRENT_INDEX'
+        setCurrentIndex: 'SET_CURRENT_INDEX',
+        setMode: 'SET_PLAY_MODE',
+        setPlayList: 'SET_PLAYLIST',
+        setSequenceList: 'SET_SEQUENCE_LIST'
       })
     },
     watch: {
-      currentSong () {
+      currentSong (newsong, oldsong) {
+        if (newsong.id === oldsong.id) {
+          return
+        }
         this.$nextTick(() => {
           this.$refs.audio.play()
         })

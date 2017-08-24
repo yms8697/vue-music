@@ -1,6 +1,6 @@
 <template>
   <div id="progress">
-    <div class="bar-inner" ref="progressBar">
+    <div class="bar-inner" ref="progressBar" @click="progressClick">
       <div class="progress" ref="progress"></div>
       <div class="progress-btn-wrapper" ref="btn"
         @touchstart.prevent="progressTouchStart"
@@ -34,6 +34,7 @@
     },
     methods: {
       progressTouchStart (e) {
+        // 设置拖动状态
         this.touch.initiated = true
         this.touch.startX = e.touches[0].pageX
         this.touch.left = this.$refs.progress.clientWidth
@@ -48,6 +49,10 @@
       },
       progressTouchEnd () {
         this.touch.initiated = false
+        this._trigger()
+      },
+      progressClick (e) {
+        this._offset(e.offsetX)
         this._trigger()
       },
       _trigger () {
