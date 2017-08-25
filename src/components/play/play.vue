@@ -19,10 +19,10 @@
             <div class="icon"><Icon type="android-more-vertical"></Icon></div>
           </div>
         </div>
-        <Scroll class="lyric-container" :data="lyric&&lyric.lines">
+        <Scroll class="lyric-container" :data="lyric&&lyric.lines" ref='lyricList'>
           <div>
             <div v-if="lyric">
-              <p :class="{'current':index === lyricLineNum}" v-for="(item, index) in lyric.lines" :key="index">{{item.txt}}</p>
+              <p ref="lyricLine" class="lyric" :class="{'current':index === lyricLineNum}" v-for="(item, index) in lyric.lines" :key="index">{{item.txt}}</p>
             </div>
           </div>
         </Scroll>
@@ -121,6 +121,12 @@
       },
       handleLyric ({lineNum, txt}) {
         this.lyricLineNum = lineNum
+        if (lineNum > 5) {
+          let el = this.$refs.lyricLine[lineNum - 5]
+          this.$refs.lyricList.scrollToElement(el, 1000)
+        } else {
+          this.$refs.lyricList.scrollTo(0, 0, 1000)
+        }
       },
       // 隐藏normalplayer
       back () {
@@ -331,6 +337,9 @@
       overflow: hidden
       .current
         color:#fff
+        font-size: 24px
+      .lyric
+        line-height:40px
     .footer
       position :absolute
       bottom:0px
