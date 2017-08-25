@@ -10,7 +10,7 @@
           <div class="playtitle" v-html='currentSong.name'></div>
           <div class="share"></div>
         </div>
-        <div class="main">
+        <div class="main" v-show='false'>
           <div class="img-container"><img :class="rotate" :src="currentSong.imgUrl"></div>
           <div class="icon-container">
             <div class="icon"><Icon type="android-favorite-outline"></Icon></div>
@@ -19,6 +19,13 @@
             <div class="icon"><Icon type="android-more-vertical"></Icon></div>
           </div>
         </div>
+        <Scroll class="lyric-container" :data="lyric&&lyric.lines">
+          <div>
+            <div v-if="lyric">
+              <p :class="{'current':index === lyricLineNum}" v-for="(item, index) in lyric.lines" :key="index">{{item.txt}}</p>
+            </div>
+          </div>
+        </Scroll>
         <div class="footer">
           <div class="progress-container">
             <div class="time">{{format(currentTime)}}</div>
@@ -44,16 +51,22 @@
 <script>
   import {mapGetters, mapMutations} from 'vuex'
   import ProgressBar from '@/base/progress'
-  import {playMode} from '@/common/js/config'
+  import {playMode, ERR_OK} from '@/common/js/config'
   import {shuffle} from '@/common/js/util'
+  import {getLyric} from '@/api/getData'
+  import Lyric from 'lyric-parser'
+  import Scroll from '@/base/scroll'
   export default {
     components: {
-      ProgressBar
+      ProgressBar,
+      Scroll
     },
     data () {
       return {
         songReady: false,
-        currentTime: 0
+        currentTime: 0,
+        lyric: null,
+        lyricLineNum: 0
       }
     },
     computed: {
@@ -86,6 +99,29 @@
       }
     },
     methods: {
+      // 获取歌词
+      getlyric () {
+        getLyric(this.currentSong.id).then((res) => {
+          let data = res.data
+          console.log(data)
+          if (data.code === ERR_OK) {
+            // 判断是否有歌词
+            if (data.nolyric) {
+              this.lyric = ''
+            } else {
+              this.lyric = new Lyric(data.lrc.lyric, this.handleLyric)
+              // 判断歌曲播放状态
+              if (this.playing) {
+                this.lyric.play()
+              }
+              console.log(this.lyric)
+            }
+          }
+        })
+      },
+      handleLyric ({lineNum, txt}) {
+        this.lyricLineNum = lineNum
+      },
       // 隐藏normalplayer
       back () {
         this.setFullScreen(false)
@@ -208,6 +244,7 @@
         }
         this.$nextTick(() => {
           this.$refs.audio.play()
+          this.getlyric()
         })
       },
       playing (newPlaying) {
@@ -283,6 +320,17 @@
           line-height :30px
           color:#fff
           font-size :30px
+    .lyric-container
+      width:100%
+      position:absolute
+      top:60px
+      bottom:100px
+      color:rgba(255,255,255,0.6)
+      font-size :18px
+      text-align :center
+      overflow: hidden
+      .current
+        color:#fff
     .footer
       position :absolute
       bottom:0px

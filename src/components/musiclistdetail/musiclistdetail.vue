@@ -1,7 +1,10 @@
 <template>
   <div id="detail-wrap">
     <div  class="list-title">
-      <span @click="back"><Icon type="chevron-left"></Icon></span>
+      <div class="back-icon" @click="back"><Icon type="chevron-left"></Icon></div>
+      <div class="text">歌单</div>
+      <div class="search-icon"><Icon type="ios-search"></Icon></div>
+      <div class="list-icon"><Icon type="navicon"></Icon></div>
     </div>
     <Scroll :data="list" class="wrap-content">
       <div>

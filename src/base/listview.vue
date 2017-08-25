@@ -10,6 +10,9 @@
       </div>
     </div>
     <div class="play-all">
+      <div class="play-icon"><i class="icon-playdetail"></i></div>
+      <div class="text">播放全部(共{{list.length}}首)</div>
+      <div class="select"></div>
     </div>
     <div>
       <ul class="itemlist">
@@ -65,6 +68,7 @@
 <style lang='stylus' rel='stylesheet/stylus'>
   .list-title
     position :fixed
+    display:flex
     top:0px
     width :100%
     height:60px
@@ -72,6 +76,13 @@
     z-index :9
     font-size :16px
     color:#fff
+    line-height :60px
+    .back-icon, .search-icon, .list-icon
+      flex:1
+      text-align :center
+      font-size :24px
+    .text
+      flex: 4
   .blur
     width:100%
     position :absolute
@@ -106,8 +117,21 @@
           font-weight:200
   .play-all
     width:100%
-    height:50px
+    height:60px
+    display:flex
     border-bottom:1px solid rgba(195, 194, 194, 0.4)
+    line-height :60px
+    .play-icon
+      flex:1
+      height:100%
+      text-align :center
+      font-size :24px
+    .text
+      flex:4
+      height:100%
+    .select
+      flex:1
+      height:100%
   .ivu-spin
     margin-top:30px
     .demo-spin-icon-load{

@@ -28,4 +28,11 @@ export function getPlayUrl (id) {
     }
   })
 }
+export function getLyric (id) {
+  return axios.get('http://localhost:3000/lyric', {
+    params: {
+      id: id
+    }
+  })
+}
 
