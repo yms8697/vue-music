@@ -8,24 +8,33 @@
             <Icon type="chevron-left"></Icon>
           </div>
           <div class="playtitle" v-html='currentSong.name'></div>
-          <div class="share"></div>
+          <div class="share"><Icon type="ios-redo-outline"></Icon></div>
         </div>
-        <div class="main" v-show='false'>
-          <div class="img-container"><img :class="rotate" :src="currentSong.imgUrl"></div>
-          <div class="icon-container">
-            <div class="icon"><Icon type="android-favorite-outline"></Icon></div>
-            <div class="icon"><i class="icon-message"></i></div>
-            <div class="icon"><Icon type="android-textsms"></Icon></div>
-            <div class="icon"><Icon type="android-more-vertical"></Icon></div>
-          </div>
-        </div>
-        <Scroll class="lyric-container" :data="lyric&&lyric.lines" ref='lyricList'>
-          <div>
-            <div v-if="lyric">
-              <p ref="lyricLine" class="lyric" :class="{'current':index === lyricLineNum}" v-for="(item, index) in lyric.lines" :key="index">{{item.txt}}</p>
+        <div class="main"
+          @touchstart.prevent="mainTouchStart"
+          @touchmove.prevent="mainTouchMove"
+          @touchend="mainTouchEnd">
+          <div class="main-r" ref="mainRight">
+            <div class="img-container"><img :class="rotate" :src="currentSong.imgUrl"></div>
+            <div class="playing-lyric"v-show="playingLyric">{{playingLyric}}</div>
+            <div class="icon-container">
+              <div class="icon"><Icon type="android-favorite-outline"></Icon></div>
+              <div class="icon"><i class="icon-message"></i></div>
+              <div class="icon"><Icon type="android-textsms"></Icon></div>
+              <div class="icon"><Icon type="android-more-vertical"></Icon></div>
             </div>
           </div>
-        </Scroll>
+          <Scroll class="lyric-container" :data="lyric&&lyric.lines" ref='lyricList'>
+            <div>
+              <div v-if="lyric">
+                <p ref="lyricLine" class="lyric" :class="{'current':index === lyricLineNum}" v-for="(item, index) in lyric.lines" :key="index">{{item.txt}}</p>
+              </div>
+              <div class="nolyric" v-else>
+                暂无歌词
+              </div>
+            </div>
+          </Scroll>
+        </div>
         <div class="footer">
           <div class="progress-container">
             <div class="time">{{format(currentTime)}}</div>
@@ -43,7 +52,12 @@
       </div>
     </transition>
     <transition name="mini">
-      <div @click="open" class="mini-player" v-show="!fullScreen"></div>
+      <div @click="open" class="mini-player" v-show="!fullScreen">
+        <div class="img-container"><img :src="currentSong.imgUrl"></img></div>
+        <div class="text" v-html="currentSong.name"></div>
+        <div class="icon"></div>
+        <div class="icon"></div>
+      </div>
     </transition>
     <audio :src="currentSong.playUrl" ref="audio" @timeupdate="updatatime" @canplay="ready" @error="error" @ended="end"></audio>
   </div>
@@ -66,8 +80,13 @@
         songReady: false,
         currentTime: 0,
         lyric: null,
-        lyricLineNum: 0
+        lyricLineNum: 0,
+        currentShow: 'cd',
+        playingLyric: ''
       }
+    },
+    created () {
+      this.touch = {}
     },
     computed: {
       ...mapGetters([
@@ -107,7 +126,9 @@
           if (data.code === ERR_OK) {
             // 判断是否有歌词
             if (data.nolyric) {
-              this.lyric = ''
+              this.lyric = null
+              this.playingLyric = ''
+              this.lyricLineNum = 0
             } else {
               this.lyric = new Lyric(data.lrc.lyric, this.handleLyric)
               // 判断歌曲播放状态
@@ -127,6 +148,62 @@
         } else {
           this.$refs.lyricList.scrollTo(0, 0, 1000)
         }
+        this.playingLyric = txt
+      },
+      // 滑动切换
+      mainTouchStart (e) {
+        this.touch.initiated = true
+        const touch = e.touches[0]
+        this.touch.startX = touch.pageX
+        this.touch.startY = touch.pageY
+      },
+      mainTouchMove (e) {
+        if (!this.touch.initiated) {
+          return
+        }
+        const touch = e.touches[0]
+        const deltaX = touch.pageX - this.touch.startX
+        const deltaY = touch.pageY - this.touch.startY
+        if (Math.abs(deltaY) > Math.abs(deltaX)) {
+          return
+        }
+        const left = this.currentShow === 'cd' ? 0 : -window.innerWidth
+        const width = Math.min(0, Math.max(-window.innerWidth, left + deltaX))
+        this.touch.percent = Math.abs(width / window.innerWidth)
+        this.$refs.lyricList.$el.style['transform'] = `translate3d(${width}px,0,0)`
+        this.$refs.lyricList.$el.style['transitionDuration'] = 0
+        this.$refs.mainRight.style.opacity = 1 - this.touch.percent
+        this.$refs.mainRight.style['transitionDuration'] = 0
+      },
+      mainTouchEnd () {
+        let offWidth
+        let opacity
+        if (this.currentShow === 'cd') {
+          // 滑动距离超过屏幕一定比例时
+          if (this.touch.percent > 0.5) {
+            console.log(window.innerWidth)
+            offWidth = -window.innerWidth
+            this.currentShow = 'lyric'
+            opacity = 0
+          } else {
+            offWidth = 0
+            opacity = 1
+          }
+        } else {
+          if (this.touch.percent < 0.5) {
+            offWidth = 0
+            this.currentShow = 'cd'
+            opacity = 1
+          } else {
+            offWidth = -window.innerWidth
+            opacity = 0
+          }
+        }
+        const time = 300
+        this.$refs.lyricList.$el.style['transform'] = `translate3d(${offWidth}px,0,0)`
+        this.$refs.lyricList.$el.style['transitionDuration'] = `${time}ms`
+        this.$refs.mainRight.style.opacity = opacity
+        this.$refs.mainRight.style['transitionDuration'] = `${time}ms`
       },
       // 隐藏normalplayer
       back () {
@@ -139,6 +216,9 @@
       // 改变播放状态
       togglePlaying () {
         this.setPlayingState(!this.playing)
+        if (this.lyric) {
+          this.lyric.togglePlay()
+        }
       },
       // 播放结束时播放下一首
       end () {
@@ -146,6 +226,10 @@
         if (this.mode === playMode.loop) {
           this.$refs.audio.currentTime = 0
           this.$refs.audio.play()
+          // 单曲循环模式时歌词滚动到第一行
+          if (this.lyric) {
+            this.lyric.seek(0)
+          }
         } else {
           this.next()
         }
@@ -224,7 +308,12 @@
       },
       // percent改变时歌曲跳到相应时间
       percentChange (percent) {
-        this.$refs.audio.currentTime = percent * this.currentSong.duration / 1000
+        const currentTime = percent * this.currentSong.duration / 1000
+        this.$refs.audio.currentTime = currentTime
+        // 拖动进度条歌词跳转到相应位置
+        if (this.lyric) {
+          this.lyric.seek(currentTime * 1000)
+        }
       },
       _pad (num, n = 2) {
         var len = num.toString().length
@@ -247,6 +336,9 @@
       currentSong (newsong, oldsong) {
         if (newsong.id === oldsong.id) {
           return
+        }
+        if (this.lyric) {
+          this.lyric.stop()
         }
         this.$nextTick(() => {
           this.$refs.audio.play()
@@ -283,7 +375,7 @@
       width:100%
       height:60px
       background :rgba(255,255,255,0.1)
-      .back-icon
+      .back-icon,.share
         flex:1
         line-height :60px
         text-align :center
@@ -291,6 +383,13 @@
         font-size :20px
       .playtitle
         flex:4
+        color:#fff
+        font-size:18px
+        text-align:center
+        line-height:60px
+        overflow :hidden
+        text-overflow: ellipsis
+        white-space:nowrap
       .share
         flex:1
     .main
@@ -298,48 +397,62 @@
       position:absolute
       top:60px
       bottom:100px
-      .img-container
-        width:224px
-        height:224px
-        margin :15% auto   
-        img 
-          width:100%
-          height:100%
-          border-radius:50%
-          &.play
-            animation:rotate 20s linear infinite
-          &.pause
-            animation-play-state: paused
-          @keyframes rotate
-            0%
-              transform :rotate(0)
-            100%
-              transform :rotate(360deg)
-      .icon-container
-        display :flex
-        width:80%
-        height:30px
-        margin :0 auto
-        .icon
-          flex:1
-          text-align :center
-          line-height :30px
+      .main-r
+        width:100%
+        height:100%
+        padding-top:10%
+        .img-container
+          width:224px
+          height:224px
+          margin :0 auto   
+          img 
+            width:100%
+            height:100%
+            border-radius:50%
+            &.play
+              animation:rotate 20s linear infinite
+            &.pause
+              animation-play-state: paused
+            @keyframes rotate
+              0%
+                transform :rotate(0)
+              100%
+                transform :rotate(360deg)
+        .playing-lyric
+          width:80%
+          margin :10% auto
           color:#fff
-          font-size :30px
-    .lyric-container
-      width:100%
-      position:absolute
-      top:60px
-      bottom:100px
-      color:rgba(255,255,255,0.6)
-      font-size :18px
-      text-align :center
-      overflow: hidden
-      .current
-        color:#fff
-        font-size: 24px
-      .lyric
-        line-height:40px
+          font-size:18px
+          text-align :center
+        .icon-container
+          display :flex
+          position :absolute
+          bottom:10%
+          left:10%
+          width:80%
+          height:30px
+          .icon
+            flex:1
+            text-align :center
+            line-height :30px
+            color:#fff
+            font-size :30px
+      .lyric-container
+        position: absolute
+        padding:0 8%
+        top:10%
+        left:100%
+        width:100%
+        height:80%
+        color:rgba(255,255,255,0.6)
+        font-size :18px
+        text-align :center
+        overflow: hidden
+        .current
+          color:#fff
+          font-size: 24px
+        .lyric
+          line-height:40px
     .footer
       position :absolute
       bottom:0px
@@ -377,14 +490,25 @@
       .footer
         transform :translate3d(0,100px,0)
   .mini-player
+    display:flex
     position :fixed
     width:100%
-    height:50px
+    height:60px
     bottom:0px
     background :#fff
+    padding:10px
     &.mini-enter-active, &.mini-leave-active
       transition :all 0.5s
     &.mini-enter, &.mini-leave-to
       opacity :0
       transform :translate3d(-100%,0,0)
+    .img-container
+      flex:0 0 40px
+      img
+        width:100%
+    .text
+      flex 4
+    .icon
+      flex 1
 </style>
+
