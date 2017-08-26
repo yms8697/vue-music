@@ -14,7 +14,7 @@
         <span class="icon-community"></span>
       </router-link>
     </div>
-    <div class="search"></div>
+    <router-link tag="div" class="search" to="/search"><Icon type="ios-search-strong"></Icon></router-link>
   </div>
 </template>
 <script>
@@ -28,11 +28,12 @@
     width:100%
     height:50px
     background :#c62f2f
-    .menu
+    .menu, .search
       flex:1
-      padding:5px 0 0 10px
+      padding-top: 5px
       font-size :30px
       color:#fff
+      text-align :center
     .tab
       display :flex
       flex:3
@@ -44,6 +45,4 @@
         text-align :center
       .router-link-active
         color:#fff
-    .search
-      flex:1
 </style>

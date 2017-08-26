@@ -265,6 +265,7 @@
         if (!this.songReady) {
           return
         }
+        this.playingLyric = ''
         let index = this.currentIndex + 1
         if (index === this.playlist.length) {
           index = 0
@@ -280,6 +281,7 @@
         if (!this.songReady) {
           return
         }
+        this.playingLyric = ''
         let index = this.currentIndex - 1
         if (index === -1) {
           index = this.playlist.length - 1
