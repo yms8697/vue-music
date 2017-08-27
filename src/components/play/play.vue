@@ -342,9 +342,12 @@
         if (this.lyric) {
           this.lyric.stop()
         }
+
         this.$nextTick(() => {
-          this.$refs.audio.play()
-          this.getlyric()
+          setTimeout(() => {
+            this.$refs.audio.play()
+            this.getlyric()
+          }, 500)
         })
       },
       playing (newPlaying) {

@@ -8,10 +8,10 @@
     </div>
     <Scroll v-show='query' class="list-wrapper" :data="searchResult" :pullup="pullup" @scrollToEnd="searchMore">
       <ul class="search-list">
-        <li v-for="(item, index) in searchResult" :key="index" class="item">
+        <li @click="selectItem(item)" v-for="(item, index) in searchResult" :key="index" class="item">
           <div>
-            <div>{{item.name}}</div>
-            <div>{{item.artists[0].name}}-{{item.album.name}}</div>
+            <div v-html='highLight(item.name)'></div>
+            <div v-html="highLight(item.artists[0].name)+'-'+highLight(item.album.name)"></div>
           </div>
         </li>
         <Spin  v-show="hasMore">
@@ -26,6 +26,9 @@
   import {search} from '@/api/search'
   import {ERR_OK} from '@/common/js/config'
   import Scroll from '@/base/scroll'
+  import {mapActions} from 'vuex'
+  import Song from '@/common/js/song'
+  import { getPlayUrl } from '@/api/getData'
   export default {
     components: {
       Scroll
@@ -40,6 +43,12 @@
       }
     },
     methods: {
+      // 高亮搜索关键词
+      highLight (str) {
+        let re = new RegExp(`${this.query}`, 'gim')
+        str = str.replace(re, `<span class="highLight">${this.query}</span>`)
+        return str
+      },
       // 返回
       back () {
         this.$router.back()
@@ -61,7 +70,25 @@
             }
           }
         })
-      }
+      },
+      selectItem (item) {
+        console.log(item)
+        let song = new Song({
+          id: item.id,
+          name: item.name,
+          singer: item.artists[0].name,
+          duration: item.duration,
+          album: item.album.name,
+          imgUrl: item.album.picUrl
+        })
+        getPlayUrl(item.id).then((res) => {
+          song.playUrl = res.data.data[0].url
+        })
+        this.insertSong(song)
+      },
+      ...mapActions([
+        'insertSong'
+      ])
     },
     watch: {
       query () {
@@ -114,6 +141,8 @@
     .search-list
       .item
         padding:10px
+        .highLight
+          color:blue
       .demo-spin-icon-load
         animation: ani-demo-spin 1s linear infinite
       @keyframes ani-demo-spin
