@@ -6,7 +6,7 @@
         <input  class="search-input" v-model="query" placeholder="搜索音乐、歌手、歌词、用户"></input>
       </div>
     </div>
-    <Scroll v-show='query' class="list-wrapper" :data="searchResult" :pullup="pullup" @scrollToEnd="searchMore">
+    <Scroll ref="scroll" v-show='query' class="list-wrapper" :data="searchResult" :pullup="pullup" @scrollToEnd="searchMore">
       <ul class="search-list">
         <li @click="selectItem(item)" v-for="(item, index) in searchResult" :key="index" class="item">
           <div>
@@ -29,7 +29,9 @@
   import {mapActions} from 'vuex'
   import Song from '@/common/js/song'
   import { getPlayUrl } from '@/api/getData'
+  import {playlistMixin} from '@/common/js/mixin'
   export default {
+    mixins: [playlistMixin],
     components: {
       Scroll
     },
@@ -43,6 +45,12 @@
       }
     },
     methods: {
+      // 当mimiplay存在时将list的bottom设成60px,防止miniplay遮挡
+      handlePlaylist (playlist) {
+        const bottom = playlist.length > 0 ? '60px' : ''
+        this.$refs.scroll.$el.style.bottom = bottom
+        this.$refs.scroll.refresh()
+      },
       // 高亮搜索关键词
       highLight (str) {
         let re = new RegExp(`${this.query}`, 'gim')
