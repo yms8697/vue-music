@@ -20,8 +20,10 @@
   import { getBanner, getPersonalized, getNewsong } from '@/api/getData.js'
   import RecommendList from '@/components/recommendlist/recommendlist.vue'
   import Scroll from '@/base/scroll.vue'
+  import {playlistMixin} from '@/common/js/mixin'
   const ERR_OK = 200
   export default {
+    mixins: [playlistMixin],
     data () {
       return {
         banner: [],
@@ -52,6 +54,12 @@
       })
     },
     methods: {
+      // 当mimiplay存在时将list的bottom设成60px,防止miniplay遮挡
+      handlePlaylist (playlist) {
+        const bottom = playlist.length > 0 ? '60px' : ''
+        this.$refs.scroll.$el.style.bottom = bottom
+        this.$refs.scroll.refresh()
+      },
       _getData () {
         // 获取轮播图数据
         // setTimeout(() => {

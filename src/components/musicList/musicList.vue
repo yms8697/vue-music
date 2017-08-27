@@ -2,36 +2,40 @@
   <div id="musiclist">
     <Scroll ref="scroll" class="musiclist-content" :data="list">
       <div>
-        <div v-show="show">
-          <div class="highquality-playlist">
-            <div class="img-container">
-              <img :src="highquality.coverImgUrl"></img>
-            </div>
-            <div class="dec">
-              <h1>精品歌单</h1>
-              <span class="text">{{highquality.name}}</span>
-            </div>
+        <div class="highquality-playlist">
+          <div class="img-container">
+            <img :src="highquality.coverImgUrl"></img>
           </div>
-          <div class="playlist-select"></div>
-          <div class="wrap">
-            <ul class="playlist">
-              <li  @click="selectItem(item)" class="playlist-item" v-for="(item,index) in playlist" :key="index">
-                <div class="card">
-                  <div class="card-img">
-                    <span class="headphone"><Icon type="headphone"></Icon><span class="text">{{item.playCount}}</span></span>
-                    <div class="person"><Icon type="person"></Icon><span class="text">{{item.creator.nickname}}</span></div>
-                    <img :src="item.coverImgUrl"></img>
+          <div class="dec">
+            <h1>精品歌单</h1>
+            <span class="text">{{highquality.name}}</span>
+          </div>
+        </div>
+        <div class="playlist-select"></div>
+        <div class="wrap">
+          <ul class="playlist">
+            <li @click="selectItem(item)" class="playlist-item" v-for="(item,index) in playList" :key="index">
+              <div class="card">
+                <div class="card-img">
+                  <span class="headphone">
+                    <Icon type="headphone"></Icon>
+                    <span class="text">{{item.playCount}}</span>
+                  </span>
+                  <div class="person">
+                    <Icon type="person"></Icon>
+                    <span class="text">{{item.creator.nickname}}</span>
                   </div>
-                  <div class="card-text" v-html="item.name">
-                  </div>
+                  <img :src="item.coverImgUrl"></img>
                 </div>
-              </li>
-            </ul>
-            <Spin  fix v-show="!playlist.length">
-              <Icon type="load-c" size=35 class="demo-spin-icon-load"></Icon>
-              <div>Loading</div>
-            </Spin>
-          </div>
+                <div class="card-text" v-html="item.name">
+                </div>
+              </div>
+            </li>
+          </ul>
+          <Spin fix v-show="!playList.length">
+            <Icon type="load-c" size=35 class="demo-spin-icon-load"></Icon>
+            <div>Loading</div>
+          </Spin>
         </div>
       </div>
     </Scroll>
@@ -41,15 +45,17 @@
 <script>
   import { getPlaylist, getHighquality } from '@/api/getData.js'
   import { mapMutations } from 'vuex'
+  import {playlistMixin} from '@/common/js/mixin'
   import Scroll from '@/base/scroll.vue'
   const ERR_OK = 200
   export default {
+    mixins: [playlistMixin],
     components: {
       Scroll
     },
     data () {
       return {
-        playlist: [],
+        playList: [],
         highquality: [],
         highqualityList: [],
         show: true
@@ -57,23 +63,18 @@
     },
     computed: {
       list () {
-        return this.playlist
+        return this.playList
       }
     },
     created () {
       this._getData()
-      // this.$nextTick(() => {
-      //   this.$refs.scroll.refresh()
-      // })
-    },
-    watch: {
-      $route () {
-        if (this.$route.path === '/findmusic/musiclist') {
-          this.show = true
-        }
-      }
     },
     methods: {
+      handlePlaylist (playlist) {
+        const bottom = playlist.length > 0 ? '60px' : ''
+        this.$refs.scroll.$el.style.bottom = bottom
+        this.$refs.scroll.refresh()
+      },
       // 跳转到歌单详情页
       selectItem (item) {
         this.$router.push({
@@ -95,7 +96,7 @@
         getPlaylist().then((res) => {
           if (res.data.code === ERR_OK) {
             console.log(res.data.playlists)
-            this.playlist = res.data.playlists
+            this.playList = res.data.playlists
           }
         })
       },
