@@ -25,7 +25,7 @@
                     <Icon type="person"></Icon>
                     <span class="text">{{item.creator.nickname}}</span>
                   </div>
-                  <img :src="item.coverImgUrl"></img>
+                  <img v-lazy="item.coverImgUrl"></img>
                 </div>
                 <div class="card-text" v-html="item.name">
                 </div>

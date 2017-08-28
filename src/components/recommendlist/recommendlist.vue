@@ -1,6 +1,8 @@
 <template>
   <div id="recommendlist">
-    <h3 class="title">{{recommendtitle}}</h3>
+    <list-title>
+      <h3 class="title">{{recommendtitle}}</h3>
+    </list-title>
     <ul class="list">
       <li class="list-item" v-for="(item,index) in list" :key="index">
         <div class="card">
@@ -18,7 +20,11 @@
   </div>
 </template>
 <script>
+  import listTitle from '@/base/listTitle'
   export default {
+    components: {
+      listTitle
+    },
     props: {
       recommendtitle: {
         type: String
@@ -31,13 +37,6 @@
 </script>
 
 <style lang='stylus' rel='stylesheet/stylus'>
-  .title
-    border-left :2px solid #c62f2f
-    padding-left :5px
-    margin-top :20px
-    margin-bottom :10px
-    font-size :14px
-    line-height :14px
   .list
     display :flex
     flex-direction: row
