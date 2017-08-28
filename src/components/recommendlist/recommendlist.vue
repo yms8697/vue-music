@@ -11,7 +11,7 @@
               <Icon type="headphone"></Icon>
               <span class="text">{{item.playCount}}</span>
             </span>
-            <img :src="item.picUrl"></img>
+            <img v-lazy="item.picUrl"></img>
           </div>
           <div class="card-text">{{item.name}}</div>
         </div>

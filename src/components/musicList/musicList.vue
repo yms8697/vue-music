@@ -87,7 +87,6 @@
         // 获取精品歌单数据
         getHighquality().then((res) => {
           if (res.data.code === ERR_OK) {
-            console.log(res.data.playlists)
             this.highquality = res.data.playlists[0]
             this.highqualityList = res.data.playlists
           }
@@ -95,7 +94,6 @@
         // 获取歌单数据
         getPlaylist().then((res) => {
           if (res.data.code === ERR_OK) {
-            console.log(res.data.playlists)
             this.playList = res.data.playlists
           }
         })
@@ -129,7 +127,8 @@
           width:100%
           height:100%
       .dec
-        width:250px
+        width:80%
+        max-width:200px
         position :absolute
         top:20px
         left:120px
@@ -141,7 +140,7 @@
           font-size :20px
           font-weight:200
         .text
-          font-size :16px
+          font-size :12px
           font-weight:100
     .playlist-select
       width:100%

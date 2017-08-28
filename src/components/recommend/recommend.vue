@@ -39,7 +39,6 @@
     computed: {
       list () {
         let list = [...this.banner, ...this.personalized, ...this.newsong]
-        console.log(list)
         return list
       }
     },
@@ -73,14 +72,12 @@
         getBanner().then((res) => {
           if (res.data.code === ERR_OK) {
             this.banner = res.data.banners
-            console.log(this.banner)
           }
         })
         // 获取推荐歌单
         getPersonalized().then((res) => {
           if (res.data.code === ERR_OK) {
             this.personalized = res.data.result
-            console.log(res.data.result)
           }
         })
         // 获取推荐新歌
@@ -90,7 +87,6 @@
             for (let i = 0; i < this.newsong.length; i++) {
               this.newsong[i].picUrl = this.newsong[i].song.album.picUrl
             }
-            console.log(this.newsong)
           }
         })
       },

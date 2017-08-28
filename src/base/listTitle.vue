@@ -7,7 +7,7 @@
   .title
     border-left :2px solid #c62f2f
     padding-left :5px
-    margin-top :20px
+    margin-top :10px
     margin-bottom :10px
     font-size :14px
     line-height :14px
