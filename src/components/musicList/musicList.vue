@@ -3,6 +3,7 @@
     <Scroll ref="scroll" class="musiclist-content" :data="list">
       <div>
         <div class="highquality-playlist">
+          <div class="blur" :style="blur"></div>
           <div class="img-container">
             <img :src="highquality.coverImgUrl"></img>
           </div>
@@ -64,6 +65,9 @@
     computed: {
       list () {
         return this.playList
+      },
+      blur () {
+        return `background:url(${this.highquality.coverImgUrl});background-size:100%`
       }
     },
     created () {
@@ -121,6 +125,13 @@
       padding :20px 10px 10px 8px
       background :#777
       overflow :hidden
+      .blur
+        position :absolute
+        top:0px
+        bottom :0px
+        left:0px
+        right:0px
+        filter :blur(50px)
       .img-container
         width:100px
         img

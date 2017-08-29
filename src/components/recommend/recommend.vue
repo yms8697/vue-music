@@ -8,12 +8,18 @@
                 <div class="carousel"><img @load="loadImg" :src="item.pic"></img></div>
             </Carousel-item>
         </Carousel>
-        <div class="recommend-tab">
-        </div>
-        <RecommendList :recommendtitle="type.personalized" :list="personalized"></RecommendList>
-        <RecommendList :recommendtitle="type.newsong" :list="newsong"></RecommendList>
+        <RecommendList  :list="personalized">
+          <list-title>
+            <h3 class="title" @click="goto">推荐歌单<Icon type="chevron-right"></Icon></h3>
+          </list-title>
+        </RecommendList>
+          <list-title>
+            <h3 class="title">最新音乐</h3>
+          </list-title>
+        <RecommendList  :list="newsong"></RecommendList>
       </div>
     </Scroll>
+    <router-view ref="detail"></router-view>
   </div>
 </template>
 <script>
@@ -21,6 +27,7 @@
   import RecommendList from '@/components/recommendlist/recommendlist.vue'
   import Scroll from '@/base/scroll.vue'
   import {playlistMixin} from '@/common/js/mixin'
+  import listTitle from '@/base/listTitle'
   const ERR_OK = 200
   export default {
     mixins: [playlistMixin],
@@ -29,11 +36,7 @@
         banner: [],
         value2: 0,
         personalized: [],
-        newsong: [],
-        type: {
-          personalized: '推荐歌单',
-          newsong: '最新音乐'
-        }
+        newsong: []
       }
     },
     computed: {
@@ -44,7 +47,8 @@
     },
     components: {
       RecommendList,
-      Scroll
+      Scroll,
+      listTitle
     },
     created () {
       this._getData()
@@ -58,6 +62,10 @@
         const bottom = playlist.length > 0 ? '60px' : ''
         this.$refs.scroll.$el.style.bottom = bottom
         this.$refs.scroll.refresh()
+      },
+      // 跳转到歌单页
+      goto () {
+        this.$router.push({ path: '/findmusic/musiclist' })
       },
       _getData () {
         // 获取轮播图数据
@@ -113,8 +121,4 @@
       img
         width:100%
         height:100%
-    .recommend-tab
-      width:100%
-      height:100px
-      border-bottom :1px solid rgba(134, 129, 129, 0.3)
 </style>

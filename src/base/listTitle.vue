@@ -11,4 +11,7 @@
     margin-bottom :10px
     font-size :14px
     line-height :14px
+    .ivu-icon
+      margin-left:5px
+      color:#8a8a8a
 </style>

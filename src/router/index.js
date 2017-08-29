@@ -32,7 +32,13 @@ export default new Router({
       children: [
         {
           path: 'recommend',
-          component: Recommend
+          component: Recommend,
+          children: [
+            {
+              path: 'detail',
+              component: MusicListDetail
+            }
+          ]
         },
         {
           path: 'musiclist',

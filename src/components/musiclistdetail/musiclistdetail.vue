@@ -1,17 +1,25 @@
 <template>
   <div id="detail-wrap">
-    <div  class="list-title">
+    <div  class="list-title" ref="listTitle">
       <div class="back-icon" @click="back"><Icon type="chevron-left"></Icon></div>
       <div class="text">歌单</div>
       <div class="search-icon"><Icon type="ios-search"></Icon></div>
       <div class="list-icon"><Icon type="navicon"></Icon></div>
     </div>
-    <Scroll :data="list" class="wrap-content">
+    <Scroll :data="list" class="wrap-content" :maxY = 'scrollY'>
       <div>
-        <Listview @select="selectItem" :title="title" :img='bgImg' :list='detailList'>
-          <div @click="detailShow" class="bg-img" >
-            <img :src="bgImg">
+        <div class="listdec" ref="listdec">
+          <div class="blur" :style="bgStyle"></div>
+          <div class="wrap">
+            <div @click="detailShow" class="bg-img">
+              <img :src="bgImg">
+            </div>
+            <div class="dec">
+              <h1 v-html="title"></h1>
+            </div>
           </div>
+        </div>
+        <Listview @select="selectItem"  :list='detailList'>
         </Listview>
       </div>
     </Scroll>
@@ -28,7 +36,7 @@
               <div class="dec" v-html="replace"></div>
               <span> 
                 <span>标签:</span>
-                <span  class="tag"v-for='(item,index) in this.musiclist.tags' :key="index">
+                <span  class="tag"v-for='(item,index) in this.mlist.tags' :key="index">
                   <div>{{item}}</div>
                 </span>
               </span>
@@ -49,14 +57,26 @@
   import {mapActions} from 'vuex'
   import { getListDetail, getPlayUrl } from '@/api/getData.js'
   import Scroll from '@/base/scroll.vue'
+  import {ERR_OK} from '@/common/js/config'
   export default {
     data () {
       return {
         detailList: [],
-        show: false
+        mlist: [],
+        show: false,
+        scrollY: 0
       }
     },
+    mounted () {
+      this.scrollY = this.$refs.listdec.clientHeight - 60
+    },
     computed: {
+      change () {
+        return this.$store.state.bgstyle
+      },
+      bgStyle () {
+        return `background:url(${this.musiclist.coverImgUrl});background-size:100%`
+      },
       list () {
         return this.detailList
       },
@@ -70,9 +90,11 @@
       },
       // 将字符串中的空格替换成</br>
       replace () {
-        let str = this.musiclist.description
-        str = str.replace(/\s/g, '</br>')
-        return str
+        if (this.mlist.description) {
+          let str = this.mlist.description
+          str = str.replace(/\s/g, '</br>')
+          return str
+        }
       },
       title () {
         if (this.musiclist) {
@@ -88,7 +110,14 @@
       Listview,
       Scroll
     },
+    watch: {
+      change (val) {
+        const color = val ? 'rgba(255,255,255,0.1)' : 'rgb(152, 150, 150)'
+        this.$refs.listTitle.style.background = color
+      }
+    },
     created () {
+      console.log(this.$store.state.musiclist)
       if (!this.musiclist) {
         this.$router.push({
           path: `/findmusic/musiclist`
@@ -122,14 +151,17 @@
       // 获取数据
       _getData () {
         getListDetail(this.musiclist.id).then((res) => {
-          // this.detailList = res.data.playlist.tracks
-          // console.log(res.data.playlist.tracks)
-          this.detailList = this.normalizeSongs(res.data.playlist.tracks)
-          this.detailList.forEach((item) => {
-            getPlayUrl(item.id).then((res) => {
-              item.playUrl = res.data.data[0].url
+          if (res.status === ERR_OK) {
+            // this.detailList = res.data.playlist.tracks
+            // console.log(res.data.playlist.tracks)
+            this.mlist = res.data.playlist
+            this.detailList = this.normalizeSongs(res.data.playlist.tracks)
+            this.detailList.forEach((item) => {
+              getPlayUrl(item.id).then((res) => {
+                item.playUrl = res.data.data[0].url
+              })
             })
-          })
+          }
         })
       },
       normalizeSongs (list) {
@@ -160,7 +192,7 @@
     overflow :hidden
     background :#fff
   .slide-enter-active, .slide-leave-active
-    transition :all 0.3s
+    transition :all 0.2s
   .slide-enter, .slide-leave-to
     transform :translate3d(0,100%,0)
   .dec-detail
@@ -196,6 +228,8 @@
         font-weight:200
         margin :10px 0
         text-align:center
+      .dec
+        margin :10px 0px
       .tag
         display :inline-block
         margin-left :8px

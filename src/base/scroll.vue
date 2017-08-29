@@ -5,6 +5,7 @@
 </template>
 <script>
   import BScroll from 'better-scroll'
+  import {mapMutations} from 'vuex'
   export default {
     props: {
       probeType: {
@@ -22,6 +23,9 @@
       pullup: {
         type: Boolean,
         default: false
+      },
+      maxY: {
+        type: Number
       }
     },
     mounted () {
@@ -47,6 +51,34 @@
             }
           })
         }
+        this.scroll.on('scroll', (pos) => {
+          let scrollY = Math.abs(Math.round(pos.y))
+          if (scrollY >= this.maxY) {
+            if (this.$store.state.bgstyle === false) {
+              return
+            }
+            this.setBgStyle(false)
+          } else {
+            if (this.$store.state.bgstyle === true) {
+              return
+            }
+            this.setBgStyle(true)
+          }
+        })
+        this.scroll.on('scrollEnd', (pos) => {
+          let scrollY = Math.abs(Math.round(pos.y))
+          if (scrollY >= this.maxY) {
+            if (this.$store.state.bgstyle === false) {
+              return
+            }
+            this.setBgStyle(false)
+          } else {
+            if (this.$store.state.bgstyle === true) {
+              return
+            }
+            this.setBgStyle(true)
+          }
+        })
       },
       enable () {
         this.scroll && this.scroll.enable()
@@ -62,7 +94,10 @@
       },
       scrollToElement () {
         this.scroll && this.scroll.scrollToElement.apply(this.scroll, arguments)
-      }
+      },
+      ...mapMutations({
+        setBgStyle: 'SET_BGSTYLE'
+      })
     },
     watch: {
       data () {

@@ -1,17 +1,15 @@
 <template>
   <div id="recommendlist">
-    <list-title>
-      <h3 class="title">{{recommendtitle}}</h3>
-    </list-title>
+    <slot></slot>
     <ul class="list">
-      <li class="list-item" v-for="(item,index) in list" :key="index">
-        <div class="card">
-          <div class="card-img">
+      <li class="list-item" v-for="(item,index) in (list.length>6?list.slice(0,6):list)" :key="index">
+        <div class="card" @click.stop="goto(item)">
+          <div class="card-img" ref="cardImg">
             <span class="headphone" v-show="item.playCount">
               <Icon type="headphone"></Icon>
               <span class="text">{{item.playCount}}</span>
             </span>
-            <img v-lazy="item.picUrl"></img>
+            <img  v-lazy="item.picUrl"></img>
           </div>
           <div class="card-text">{{item.name}}</div>
         </div>
@@ -20,18 +18,29 @@
   </div>
 </template>
 <script>
-  import listTitle from '@/base/listTitle'
+  import { mapMutations } from 'vuex'
   export default {
-    components: {
-      listTitle
-    },
     props: {
-      recommendtitle: {
-        type: String
-      },
       list: {
         type: Array
       }
+    },
+    methods: {
+      goto (item) {
+        console.log(item)
+        let musicList = {
+          coverImgUrl: item.picUrl,
+          name: item.name,
+          id: item.id
+        }
+        this.$router.push({
+          path: 'recommend/detail'
+        })
+        this.setMusicList(musicList)
+      },
+      ...mapMutations({
+        setMusicList: 'SET_MUSICLIST'
+      })
     }
   }
 </script>

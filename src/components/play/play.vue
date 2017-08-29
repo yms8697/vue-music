@@ -7,7 +7,10 @@
           <div @click="back" class="back-icon">
             <Icon type="chevron-left"></Icon>
           </div>
-          <div class="playtitle" v-html='currentSong.name'></div>
+          <div class="playtitle">
+            <span class="song">{{currentSong.name}}</span>
+            <span class="singer">{{currentSong.singer}}</span>
+          </div>
           <div class="share"><Icon type="ios-redo-outline"></Icon></div>
         </div>
         <div class="main"
@@ -19,7 +22,7 @@
             <div class="playing-lyric"v-show="playingLyric">{{playingLyric}}</div>
             <div class="icon-container">
               <div class="icon"><Icon type="android-favorite-outline"></Icon></div>
-              <div class="icon"><i class="icon-message"></i></div>
+              <div class="icon"><Icon type="ios-download-outline"></Icon></div>
               <div class="icon"><Icon type="android-textsms"></Icon></div>
               <div class="icon"><Icon type="android-more-vertical"></Icon></div>
             </div>
@@ -55,8 +58,8 @@
       <div @click="open" class="mini-player" v-show="!fullScreen">
         <div class="img-container"><img :src="currentSong.imgUrl"></img></div>
         <div class="text" v-html="currentSong.name"></div>
-        <div class="icon"></div>
-        <div class="icon"></div>
+        <div @click.stop="togglePlaying" class="icon"><i :class="playIcon"></i></div>
+        <div @click.stop="listShow"class="icon"><Icon type="ios-list-outline"></Icon></div>
       </div>
     </transition>
     <audio :src="currentSong.playUrl" ref="audio" @timeupdate="updatatime" @canplay="ready" @error="error" @ended="end"></audio>
@@ -118,6 +121,9 @@
       }
     },
     methods: {
+      listShow () {
+
+      },
       // 获取歌词
       getlyric () {
         getLyric(this.currentSong.id).then((res) => {
@@ -388,24 +394,28 @@
         font-size :20px
       .playtitle
         flex:4
+        display:flex
+        flex-direction :column
+        justify-content:space-around
         color:#fff
-        font-size:18px
-        text-align:center
-        line-height:60px
+        font-size:16px
         overflow :hidden
         text-overflow: ellipsis
         white-space:nowrap
+        .singer
+          font-size :14px
+          color:rgba(255,255,255,0.5)
       .share
         flex:1
     .main
       width:100%
       position:absolute
       top:60px
-      bottom:100px
+      bottom:15%
       .main-r
         width:100%
         height:100%
-        padding-top:10%
+        padding-top:20%
         .img-container
           width:224px
           height:224px
@@ -425,14 +435,14 @@
                 transform :rotate(360deg)
         .playing-lyric
           width:80%
-          margin :10% auto
+          margin :5% auto
           color:#fff
           font-size:18px
           text-align :center
         .icon-container
           display :flex
           position :absolute
-          bottom:10%
+          bottom:5%
           left:10%
           width:80%
           height:30px
@@ -455,7 +465,7 @@
         overflow: hidden
         .current
           color:#fff
-          font-size: 24px
+          font-size: 20px
         .lyric
           line-height:40px
     .footer
@@ -513,7 +523,11 @@
         width:100%
     .text
       flex 4
+      padding-left :10px
     .icon
       flex 1
+      text-align :center
+      line-height:40px
+      font-size:20px
 </style>
 

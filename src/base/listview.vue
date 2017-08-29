@@ -1,15 +1,6 @@
 <template>
   <div id="listview">
-    <div class="listdec">
-      <div class="blur" :style="bgStyle"></div>
-      <div class="wrap">
-        <slot></slot>
-        <div class="dec">
-          <h1 v-html="title"></h1>
-        </div>
-      </div>
-    </div>
-    <div class="play-all">
+    <div class="play-all border-1px">
       <div class="play-icon"><i class="icon-playdetail"></i></div>
       <div class="text">播放全部(共{{list.length}}首)</div>
       <div class="select"></div>
@@ -18,7 +9,7 @@
       <ul class="itemlist">
         <li @click="selectItem(item, index)" class="item" v-for="(item,index) in list" :key="index">
           <div class="index" v-html="index+1"></div>
-          <div class="song">
+          <div class="song border-1px">
             <div class="name">{{item.name}}</div>
             <div class="album">{{item.singer}}-{{item.album}}</div>
           </div>
@@ -47,14 +38,6 @@
     props: {
       list: {
         type: Array
-      },
-      title: {
-        type: String,
-        default: ''
-      },
-      img: {
-        type: String,
-        default: ''
       }
     },
     computed: {
@@ -66,6 +49,7 @@
 </script>
 
 <style lang='stylus' rel='stylesheet/stylus'>
+  @import "../common/stylus/mixin.styl"
   .list-title
     position :fixed
     display:flex
@@ -119,8 +103,8 @@
     width:100%
     height:60px
     display:flex
-    border-bottom:1px solid rgba(195, 194, 194, 0.4)
     line-height :60px
+    border-1px(rgba(7,17,27,0.5))
     .play-icon
       flex:1
       height:100%
@@ -152,7 +136,7 @@
     .song
       flex:1
       padding :5px 0px
-      border-bottom:1px solid rgba(195, 194, 194, 0.4)
+      border-1px(rgb(195, 194, 194))
       .name
         font-size :14px
         width:200px

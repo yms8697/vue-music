@@ -10,7 +10,7 @@
             <div class="img-container">
               <img v-lazy="item.coverImgUrl">
             </div>
-            <div class="dec">
+            <div class="dec border-1px">
               <span class="text" v-for="(item, key) in list[index].tracks.slice(0,3)" :key="key">
                 {{key+1}}.{{item.name}}-{{item.artists[0].name}}
               </span>
@@ -56,7 +56,6 @@
         getRank(idx).then((res) => {
           if (res.status === ERR_OK) {
             let data = res.data.result
-            console.log(data)
             this.list.push(data)
           }
         })
@@ -66,6 +65,7 @@
 </script>
 
 <style lang='stylus' rel='stylesheet/stylus'>
+  @import "../../common/stylus/mixin.styl"
   #rank
     position :fixed
     width :100%
@@ -88,8 +88,8 @@
         flex-direction:column
         justify-content:space-around
         padding :10px
-        border-bottom:1px solid #d2cccc
         font-size:12px
+        border-1px(rgba(7,17,27,0.5))
         .text
           width:90%
           max-width:180px

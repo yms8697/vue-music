@@ -1,4 +1,11 @@
 body,html 
   font-family: 'PingFang SC'
   font-weight: 200
-  background: #1d1d1d
+@media (-webkit-min-device-pixel-ratio: 1.5)
+  .border-1px
+    &::after
+      transform: scaleY(0.7)
+@media (-webkit-min-device-pixel-ratio: 1.5)
+  .border-1px
+    &::after
+      transform: scaleY(0.5)
