@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>数据查询</title>
+	<link rel="stylesheet" href="/static/css/ol.css" type="text/css"> 
+	<link rel="stylesheet" type="text/css" href="/static/css/bootstrap.css">
+	
+	<style type="text/css">
+		.map{
+			position: absolute;
+			top:52px;
+        	width:100%;
+        	bottom: 0px;
+        	left: 0px;
+        }
+        .progress-container{
+			position: absolute;
+			background: #fff;
+			top:52px;
+        	width:100%;
+        	bottom: 0px;
+        	left: 0px;
+        }
+        .count{
+			position: absolute;
+			top:52px;
+        	width:100%;
+        	bottom: 0px;
+        	left: 0px;
+        }
+       	.echart{
+			position: absolute;
+			top:52px;
+        	width:100%;
+        	bottom: 0px;
+        	left: 0px;
+        }
+		.circle{
+			display: inline-block;
+			margin-left:13px;
+			margin-top: 10px;
+			height: 75px;
+			width:75px;
+			box-sizing: border-box;
+			border: 5px solid #e9b12c;
+			border-radius: 50%;
+			text-align: center;
+			line-height: 75px;
+			font-size: 12px;
+			color:#e9b12c;
+			}
+		.popup-text{
+
+			display:inline-block;
+			width:75px;
+			margin-left:15px;
+			text-align: center;
+			height:30px;
+			line-height: 30px;
+			color: #e9b12c;
+		}
+		.ol-popup{
+			position: absolute;
+			left:-300px;
+		}
+		.visualmap{
+			width:100px;
+			height:200px;
+			background: #fff;
+			position: absolute;
+			right:50px;
+			bottom: 50px;
+		}
+
+	</style>
+</head>
+<body>
+	<div id="app">
+		
+		<nav class="navbar navbar-default">
+			<div class="container-fluid">
+				<!-- Brand and toggle get grouped for better mobile display -->
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="javascript:">Brand</a>
+				</div>
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+			    	<ul class="nav navbar-nav">
+			        	<li ><a href="/">首页</a></li>
+			        	<li class="active"><a href="/query">主要功能<span class="sr-only">(current)</span></a></li>
+			        	<li class="dropdown">
+							<a href="javascript:" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">数据分析<span class="caret"></span></a>
+							<ul class="dropdown-menu">
+								<li><a href="javascript:" v-on:click="heatmapShow()">插值分析</a></li>
+								<li role="separator" class="divider"></li>
+								<li><a href="javascript:" v-on:click="echartsShow()">变化趋势分析</a></li>
+								<li role="separator" class="divider"></li>
+								<li><a href="javascript:"  v-on:click="countShow()">统计分析</a></li>
+							</ul>
+						</li>
+			        </ul>
+			      	<div class="navbar-form navbar-left">
+				        <div class="form-group">
+				          <input type="text" class="form-control" id="cityname" placeholder="请输入城市">
+				        </div>
+				        <div class="form-group">
+				          <input type="text" class="form-control" id="time" placeholder="请输入时间">
+				        </div>
+			        	<button v-on:click="getHistoryData()" class="btn btn-default">搜索</button>
+			        </div>
+		        </div>
+	        </div>
+		</nav>
+		<!-- popup -->
+		<div id="ol-popup" class="ol-popup">
+		    <div id="popup-content"  class="popup-content">
+		    	<div class="time-content">时间:{{time}}</div>
+		    	<span class="circle" id="aqi-data" >{{aqi}}</span>
+		    	<span class="circle"  id="pm25-data">{{pm25}}</span>
+		    	<span class="circle" id="rank">{{airquality}}</span>
+		    	<div>
+		    		<span class="popup-text">AQI</span>
+		    		<span class="popup-text">pm2.5</span>
+		    		<span class="popup-text">空气质量</span>
+		    	</div>
+		    </div>
+		</div>  
+		<div v-show="map" class="map" id="map">
+		</div>
+		<div  v-show="echart" id="echart" class='echart'>
+		
+		</div>
+		<div v-show='count' class="count" id="count"></div>
+		<div v-show='visualmap' class="visualmap" id="visualmap">
+		</div>
+	</div>
+	<script type="text/javascript" src="/static/script/vue.js"></script>
+	<script type="text/javascript" src="/static/script/jquery-1.9.1.min.js"></script>
+	<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=sLhNBNxahD4oI7l2pynMW0SR6G4qyUtg"></script>
+	<script type="text/javascript" src="http://api.map.baidu.com/library/Heatmap/2.0/src/Heatmap_min.js"></script>
+	<script type="text/javascript" src="/static/script/echarts.min.js"></script>
+	<script type="text/javascript" src="/static/script/bootstrap.js"></script>
+	<script type="text/javascript" src="/static/script/pages/queryfuc.js"></script>
+</body>
+</html>
